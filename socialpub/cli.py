@@ -86,7 +86,14 @@ def cmd_run(store: Store, a) -> int:
 
 def cmd_check_setup(store: Store, a) -> int:
     """Read-only: logs in / reads the account identity on every platform. Never posts."""
-    secrets = load_secrets()
+    try:
+        secrets = load_secrets()
+    except SystemExit:
+        p = store.root / "status" / "setup.json"
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps({"checked_at": iso(utcnow()), "secrets_error": "SOCIAL_SECRETS is not valid JSON (one object, straight double quotes, commas between entries, no trailing comma)", "accounts": []}, indent=2) + "\n")
+        git_checkpoint("social: setup check (secret JSON invalid)")
+        return 2
     store.secrets = [v for v in secrets.values() if v]
     out, bad = [], 0
     for acc in store.accounts().values():
