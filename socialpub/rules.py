@@ -62,10 +62,10 @@ PLATFORMS: dict[str, dict] = {
         "why": "Company pages need Community Management API approval (about 1 to 2 weeks).",
     },
     "tiktok": {
-        "label": "TikTok", "status": "not_implemented", "max_chars": 2200, "max_images": 0,
+        "label": "TikTok", "status": "implemented", "max_chars": 2200, "max_images": 0,
         "video": True, "image": False, "requires_media": True, "requires_video": True,
         "title_required": False, "daily_cap": None,
-        "why": "Posts from an unaudited app are private-only until TikTok audits the app.",
+        "note": "Private only (draft in the TikTok inbox, or posted as only-me) until TikTok audits the app.",
     },
     "youtube": {
         "label": "YouTube", "status": "not_implemented", "max_chars": 5000, "max_images": 0,

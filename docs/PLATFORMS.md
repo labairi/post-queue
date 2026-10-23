@@ -12,7 +12,7 @@ Checked 2026-10-22 against the platforms' public documentation and secondary sum
 | X | **no** | **paid per post** (about $0.015/post, about $0.20 with a link; vendor blog, verify) | n/a | 280 | no free tier for new developers |
 | LinkedIn (personal) | no | free | "Share on LinkedIn" product; unconfirmed | 3,000 | |
 | LinkedIn Page | no | free | Community Management API approval, about 1 to 2 weeks | 3,000 | |
-| TikTok | no | free | audit needed; posts from an unaudited app are private-only | 2,200 | video; verified URL ownership for pull-from-URL |
+| TikTok | yes (private only) | free | audit needed; posts from an unaudited app are private-only | 2,200 | video; verified URL ownership for pull-from-URL |
 | YouTube | no | free | Google OAuth consent; check visibility rules for unverified projects | title 100 / desc 5,000 | upload quota to check (docs differ) |
 
 ## Bluesky
@@ -50,7 +50,7 @@ Checked 2026-10-22 against the platforms' public documentation and secondary sum
 ## Not built, with what each would need
 - **X**: developer account and a paid plan; posting is per-use priced. Adding it means accepting a recurring cost, so it needs your approval first.
 - **LinkedIn**: a LinkedIn developer app and the Share product; for company pages the Community Management API approval. OAuth tokens expire (60 days) and refresh tokens need a program-approved app.
-- **TikTok**: TikTok for Developers app with the Content Posting API; until the app is audited, posts are private only.
+- **TikTok**: built, video only, private until TikTok audits the app. Account `mode` is `draft` (default: the video lands in your TikTok inbox and you tap Post; scope `video.upload`) or `direct` (posted as only-me; scope `video.publish`, and the TikTok account must be private). Secrets: client key, client secret and a refresh token (365 days). Access tokens last 24 hours and are renewed on every run. If TikTok ever issues a different refresh token the run prints a warning (never the token) and the secret must be replaced. Videos up to 64 MB. Not yet tested against the live API.
 - **YouTube**: Google Cloud project, YouTube Data API v3, OAuth consent screen and refresh token; check the daily quota and the rule that videos uploaded by unverified projects may be locked private.
 
 ## Revoking access

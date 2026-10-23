@@ -26,6 +26,17 @@
       "secrets": {
         "access_token": "THREADS_TOKEN"
       }
+    },
+    {
+      "id": "instagramaps-tiktok",
+      "platform": "tiktok",
+      "workspace": "instagramaps",
+      "mode": "draft",
+      "secrets": {
+        "client_key": "TIKTOK_CLIENT_KEY",
+        "client_secret": "TIKTOK_CLIENT_SECRET",
+        "refresh_token": "TIKTOK_REFRESH_TOKEN"
+      }
     }
   ]
 }

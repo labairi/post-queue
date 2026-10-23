@@ -16,7 +16,8 @@ VID = {"type": "video", "url": "https://cdn.example/a.mp4"}
 
 def adapter(platform, http, secrets=None, **acc):
     names = {"bluesky": {"identifier": "ID", "app_password": "PW"}, "mastodon": {"access_token": "TOK"},
-             "threads": {"access_token": "TOK"}, "facebook_page": {"page_token": "TOK"}, "instagram": {"access_token": "TOK"}}[platform]
+             "threads": {"access_token": "TOK"}, "facebook_page": {"page_token": "TOK"}, "instagram": {"access_token": "TOK"},
+             "tiktok": {"client_key": "K", "client_secret": "S", "refresh_token": "RT"}}[platform]
     account = {"id": "a", "platform": platform, "secrets": names, **acc}
     sec = secrets if secrets is not None else {"ID": "me.bsky.social", "PW": "pw-pw-pw", "TOK": "tok-123456"}
     return build_adapter(account, sec, http, lambda s: None)
@@ -266,3 +267,33 @@ def test_instagram_login_uses_instagram_host():
 
 def test_instagram_login_addresses_me():
     assert adapter("instagram", ig_http(), login="instagram")._ig() == "me"
+
+
+# ---------- TikTok ----------
+def tt_http(init_error=None, final="SEND_TO_USER_INBOX"):
+    h = FakeHttp()
+    h.add("POST", "/v2/oauth/token/", Resp(200, {"access_token": "AT", "refresh_token": "rt1"}))
+    h.add("GET", "/video.mp4", Resp(200, {}, content=b"x" * 10))
+    h.add("POST", "/inbox/video/init/", Resp(200, init_error or {"data": {"publish_id": "p1", "upload_url": "https://up.example/u"}, "error": {"code": "ok"}}))
+    h.add("POST", "/video/init/", Resp(200, {"data": {"publish_id": "p1", "upload_url": "https://up.example/u"}, "error": {"code": "ok"}}))
+    h.add("PUT", "/u", Resp(201, {}))
+    h.add("POST", "/status/fetch/", Resp(200, {"data": {"status": final}, "error": {"code": "ok"}}))
+    return h
+
+def tt(h, **acc):
+    return adapter("tiktok", h, secrets={"K": "key", "S": "sec", "RT": "rt1"}, **acc)
+
+def test_tiktok_draft_goes_to_inbox():
+    h = tt_http()
+    r = tt(h).publish(req(media=[{"type": "video", "url": "https://c.example/video.mp4"}]))
+    assert r.provider_id == "p1" and h.to("/inbox/video/init/") and not [c for c in h.calls if c[1].endswith("/publish/video/init/")]
+
+def test_tiktok_needs_video():
+    with pytest.raises(PublishError, match="needs a video"):
+        tt(tt_http()).publish(req(media=[IMG]))
+
+def test_tiktok_unaudited_error_is_permanent_and_shown():
+    h = tt_http({"data": {}, "error": {"code": "unaudited_client_can_only_post_to_private_accounts", "message": "x"}})
+    with pytest.raises(PublishError) as e:
+        tt(h).publish(req(media=[{"type": "video", "url": "https://c.example/video.mp4"}]))
+    assert e.value.kind == "permanent" and "unaudited" in str(e.value)

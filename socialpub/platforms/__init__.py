@@ -7,9 +7,10 @@ from .instagram import InstagramAdapter
 from .mastodon import MastodonAdapter
 from .mock import MockAdapter
 from .threads import ThreadsAdapter
+from .tiktok import TikTokAdapter
 
 REGISTRY = {"bluesky": BlueskyAdapter, "mastodon": MastodonAdapter, "threads": ThreadsAdapter,
-            "facebook_page": FacebookAdapter, "instagram": InstagramAdapter, "mock": MockAdapter}
+            "facebook_page": FacebookAdapter, "instagram": InstagramAdapter, "tiktok": TikTokAdapter, "mock": MockAdapter}
 
 
 def build_adapter(account: dict, secrets: dict[str, str], http, sleep=None):
