@@ -1,0 +1,9 @@
+{
+  "id": "pmvlcfgukzwc",
+  "title": "Hello im here",
+  "primary": "Hello im here",
+  "intent": "scheduled",
+  "scheduled": {"local": "2026-10-23T19:08", "tz": "Africa/Casablanca"},
+  "targets": [{"account": "instagramaps-facebook"}, {"account": "instagramaps-instagram"}, {"account": "instagramaps-threads"}, {"account": "instgramamps"}],
+  "media": [{"type": "image", "url": "https://raw.githubusercontent.com/labairi/post-queue-dashboard/main/media/instagramaps/pmvlcfgukzwc-1.jpg"}]
+}
