@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-10-23T14:21:09Z",
+  "checked_at": "2026-10-23T14:24:36Z",
   "accounts": [
     {
       "account": "instgramamps",
       "platform": "bluesky",
-      "checked_at": "2026-10-23T14:21:09Z",
-      "ok": false,
-      "error": "Bluesky login: rejected (HTTP 401). {\"error\":\"AuthenticationRequired\",\"message\":\"Invalid identifier or password\"}"
+      "checked_at": "2026-10-23T14:24:35Z",
+      "ok": true,
+      "identity": "instagramaps.bsky.social"
     }
   ]
 }
