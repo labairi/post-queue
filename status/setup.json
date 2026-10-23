@@ -1,5 +1,35 @@
 {
-  "checked_at": "2026-10-23T17:57:12Z",
-  "secrets_error": "SOCIAL_SECRETS is not valid JSON (one object, straight double quotes, commas between entries, no trailing comma)",
-  "accounts": []
+  "checked_at": "2026-10-23T18:00:41Z",
+  "accounts": [
+    {
+      "account": "instgramamps",
+      "platform": "bluesky",
+      "checked_at": "2026-10-23T18:00:39Z",
+      "ok": true,
+      "identity": "instagramaps.bsky.social"
+    },
+    {
+      "account": "instagramaps-instagram",
+      "platform": "instagram",
+      "checked_at": "2026-10-23T18:00:39Z",
+      "ok": true,
+      "identity": "instamaps_app",
+      "id": "28036468232693053"
+    },
+    {
+      "account": "instagramaps-threads",
+      "platform": "threads",
+      "checked_at": "2026-10-23T18:00:40Z",
+      "ok": true,
+      "identity": "instamaps_app",
+      "id": "29058990247072065"
+    },
+    {
+      "account": "instagramaps-facebook",
+      "platform": "facebook_page",
+      "checked_at": "2026-10-23T18:00:40Z",
+      "ok": false,
+      "error": "Facebook Page identity: rejected (HTTP 400). {\"error\":{\"message\":\"Unsupported get request. Object with ID '[redacted]' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https:\\/\\/developers.facebook.com\\/docs\\/"
+    }
+  ]
 }
