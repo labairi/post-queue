@@ -1,17 +1,17 @@
 {
-  "checked_at": "2026-10-23T18:56:36Z",
+  "checked_at": "2026-10-23T18:59:44Z",
   "accounts": [
     {
       "account": "instgramamps",
       "platform": "bluesky",
-      "checked_at": "2026-10-23T18:56:33Z",
+      "checked_at": "2026-10-23T18:59:43Z",
       "ok": true,
       "identity": "instagramaps.bsky.social"
     },
     {
       "account": "instagramaps-instagram",
       "platform": "instagram",
-      "checked_at": "2026-10-23T18:56:34Z",
+      "checked_at": "2026-10-23T18:59:43Z",
       "ok": true,
       "identity": "instamaps_app",
       "id": "28036468232693053"
@@ -19,7 +19,7 @@
     {
       "account": "instagramaps-threads",
       "platform": "threads",
-      "checked_at": "2026-10-23T18:56:34Z",
+      "checked_at": "2026-10-23T18:59:43Z",
       "ok": true,
       "identity": "instamaps_app",
       "id": "29058990247072065"
@@ -27,9 +27,9 @@
     {
       "account": "instagramaps-facebook",
       "platform": "facebook_page",
-      "checked_at": "2026-10-23T18:56:35Z",
+      "checked_at": "2026-10-23T18:59:44Z",
       "ok": false,
-      "error": "Facebook Page identity: rejected (HTTP 400). {\"error\":{\"message\":\"Unsupported get request. Object with ID '[redacted]' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https://developers.facebook.com/docs/grap"
+      "error": "Facebook Page identity: rejected (HTTP 400). {\"error\":{\"message\":\"Unsupported get request. Object with ID '61595560801146' does not exist, cannot be loaded due to missing permissions, or does not support this operation. Please read the Graph API documentation at https:\\/\\/developers.facebook.com\\/do"
     }
   ]
 }
