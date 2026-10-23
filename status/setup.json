@@ -1,20 +1,28 @@
 {
-  "checked_at": "2026-10-23T17:25:54Z",
+  "checked_at": "2026-10-23T17:41:48Z",
   "accounts": [
     {
       "account": "instgramamps",
       "platform": "bluesky",
-      "checked_at": "2026-10-23T17:25:54Z",
+      "checked_at": "2026-10-23T17:41:46Z",
       "ok": true,
       "identity": "instagramaps.bsky.social"
     },
     {
       "account": "instagramaps-instagram",
       "platform": "instagram",
-      "checked_at": "2026-10-23T17:25:54Z",
+      "checked_at": "2026-10-23T17:41:47Z",
       "ok": true,
       "identity": "instamaps_app",
       "id": "28036468232693053"
+    },
+    {
+      "account": "instagramaps-threads",
+      "platform": "threads",
+      "checked_at": "2026-10-23T17:41:47Z",
+      "ok": true,
+      "identity": "instamaps_app",
+      "id": "29058990247072065"
     }
   ]
 }
