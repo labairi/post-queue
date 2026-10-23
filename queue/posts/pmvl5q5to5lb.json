@@ -1,0 +1,9 @@
+{
+  "id": "pmvl5q5to5lb",
+  "title": "HEllo test",
+  "primary": "HEllo test",
+  "intent": "scheduled",
+  "scheduled": {"local": "2026-10-23T16:01", "tz": "Africa/Casablanca"},
+  "targets": [{"account": "instgramamps"}],
+  "media": [{"type": "image", "url": "https://raw.githubusercontent.com/labairi/post-queue-dashboard/main/media/instagramaps/pmvl5q5to5lb-1.jpg"}]
+}
