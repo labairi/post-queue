@@ -50,7 +50,7 @@ class InstagramAdapter(Adapter):
         else:
             p.update(media_type="REELS", video_url=m["url"])
         cid = call(self.http, "POST", f"{b}/{ig}/media", what="Instagram create container", data=p).json()["id"]
-        if m["type"] == "video":
+        if True:  # images need the same wait: publishing too early gives "Media ID is not available" (9007)
             for _ in range(40):
                 st = call(self.http, "GET", f"{b}/{cid}", what="Instagram container status",
                           params={"fields": "status_code", "access_token": tok}).json()

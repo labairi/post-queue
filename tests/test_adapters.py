@@ -207,6 +207,7 @@ def ig_http():
     h.add("POST", "/555/media_publish", Resp(200, {"id": "media1"}))
     h.add("POST", "/555/media", Resp(200, {"id": "cont1"}))
     h.add("GET", "/media1", Resp(200, {"permalink": "https://instagram.com/p/abc"}))
+    h.add("GET", "/cont1", Resp(200, {"status_code": "FINISHED"}))
     return h
 
 def test_instagram_image_flow():
