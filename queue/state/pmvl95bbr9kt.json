@@ -1,6 +1,6 @@
 {
   "cancelled": false,
-  "content_hash": "3606878e00662472d649c65bf977484615d4bb1360135a7f055f79dfeb1b148f",
+  "content_hash": "2f66f9a03c0777c32adb1a5adf73c5b446a8b2df08b0898365314fed3ec5c3e4",
   "force_now": false,
   "id": "pmvl95bbr9kt",
   "targets": {
@@ -18,11 +18,17 @@
       "url": "https://www.instagram.com/p/De2HK5wIMNd/"
     },
     "instgramamps": {
-      "attempts": 0,
-      "status": "pending"
+      "attempt_id": "37f234b8397f",
+      "attempts": 1,
+      "content_hash": "2f66f9a03c0777c32adb1a5adf73c5b446a8b2df08b0898365314fed3ec5c3e4",
+      "error_kind": "",
+      "last_error": "",
+      "platform": "bluesky",
+      "started_at": "2026-10-23T17:38:24Z",
+      "status": "publishing"
     }
   },
-  "updated_at": "2026-10-23T17:38:22Z",
+  "updated_at": "2026-10-23T17:38:24Z",
   "validation_error": "",
   "version": 1
 }

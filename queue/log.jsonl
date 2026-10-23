@@ -22,3 +22,4 @@
 {"commands": 0, "event": "run_summary", "failed": 0, "healed": 0, "invalid": 0, "published": 0, "retry_waiting": 0, "skipped": 0, "ts": "2026-10-23T17:34:14Z", "uncertain": 0, "would_publish": 0}
 {"account": "instagramaps-instagram", "attempt": 1, "attempt_id": "dbe2772c8ddd", "event": "attempt", "post_id": "pmvl95bbr9kt", "ts": "2026-10-23T17:38:07Z"}
 {"account": "instagramaps-instagram", "adopted": false, "event": "published", "post_id": "pmvl95bbr9kt", "provider_post_id": "18060660650583406", "ts": "2026-10-23T17:38:22Z", "url": "https://www.instagram.com/p/De2HK5wIMNd/"}
+{"account": "instgramamps", "attempt": 1, "attempt_id": "37f234b8397f", "event": "attempt", "post_id": "pmvl95bbr9kt", "ts": "2026-10-23T17:38:24Z"}
