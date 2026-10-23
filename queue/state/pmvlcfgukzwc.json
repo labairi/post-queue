@@ -1,6 +1,6 @@
 {
   "cancelled": false,
-  "content_hash": "f6e41a7cafd06fd49787e170e6f34e8aa1912841f091d29cb78f1c249507b8bf",
+  "content_hash": "6b0f2d0764f4826f66275c8ddb8eabb5a43734501a2f4db48b9b7efa816c1ad9",
   "force_now": false,
   "id": "pmvlcfgukzwc",
   "targets": {
@@ -15,8 +15,14 @@
       "status": "failed"
     },
     "instagramaps-instagram": {
-      "attempts": 0,
-      "status": "pending"
+      "attempt_id": "4fc61b93a2ab",
+      "attempts": 1,
+      "content_hash": "6b0f2d0764f4826f66275c8ddb8eabb5a43734501a2f4db48b9b7efa816c1ad9",
+      "error_kind": "",
+      "last_error": "",
+      "platform": "instagram",
+      "started_at": "2026-10-23T19:10:11Z",
+      "status": "publishing"
     },
     "instagramaps-threads": {
       "attempts": 0,
@@ -27,7 +33,7 @@
       "status": "pending"
     }
   },
-  "updated_at": "2026-10-23T19:10:10Z",
+  "updated_at": "2026-10-23T19:10:11Z",
   "validation_error": "",
   "version": 1
 }
