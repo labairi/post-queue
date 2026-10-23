@@ -24,6 +24,8 @@ class InstagramAdapter(Adapter):
         return f"https://{host}/{self.account.get('graph_version', DEFAULT_VERSION)}"
 
     def _ig(self):
+        if self.account.get("login") == "instagram":
+            return "me"  # the token already identifies the account
         i = str(self.account.get("ig_user_id", "")).strip()
         if not i.isdigit():
             raise PublishError("permanent", "Instagram: account.ig_user_id must be the numeric Instagram user id")

@@ -260,3 +260,7 @@ def test_instagram_login_uses_instagram_host():
     a = adapter("instagram", h, ig_user_id="555", login="instagram")
     assert a._b().startswith("https://graph.instagram.com/")
     assert adapter("instagram", ig_http(), ig_user_id="555")._b().startswith("https://graph.facebook.com/")
+
+
+def test_instagram_login_addresses_me():
+    assert adapter("instagram", ig_http(), login="instagram")._ig() == "me"
