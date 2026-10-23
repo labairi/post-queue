@@ -1,0 +1,21 @@
+{
+  "cancelled": false,
+  "content_hash": "0a80a1b088519e83430a5e090a8077a7e18f0a724b3439f4bd1b3551e0ef12f1",
+  "force_now": false,
+  "id": "pmvl5q5to5lb",
+  "targets": {
+    "instgramamps": {
+      "attempt_id": "32cb8f57e953",
+      "attempts": 1,
+      "content_hash": "0a80a1b088519e83430a5e090a8077a7e18f0a724b3439f4bd1b3551e0ef12f1",
+      "error_kind": "",
+      "last_error": "",
+      "platform": "bluesky",
+      "started_at": "2026-10-23T16:03:00Z",
+      "status": "publishing"
+    }
+  },
+  "updated_at": "2026-10-23T16:03:00Z",
+  "validation_error": "",
+  "version": 1
+}
