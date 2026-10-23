@@ -1,0 +1,25 @@
+{
+  "cancelled": false,
+  "content_hash": "58c512ece20a4a84584a869075fc2ef1644e9eae67e414a1a8c6fda88980c0c9",
+  "force_now": false,
+  "id": "pmvl8yuismei",
+  "targets": {
+    "instagramaps-instagram": {
+      "attempt_id": "975504f339a8",
+      "attempts": 1,
+      "content_hash": "58c512ece20a4a84584a869075fc2ef1644e9eae67e414a1a8c6fda88980c0c9",
+      "error_kind": "",
+      "last_error": "",
+      "platform": "instagram",
+      "started_at": "2026-10-23T17:32:54Z",
+      "status": "publishing"
+    },
+    "instgramamps": {
+      "attempts": 0,
+      "status": "pending"
+    }
+  },
+  "updated_at": "2026-10-23T17:32:54Z",
+  "validation_error": "",
+  "version": 1
+}
