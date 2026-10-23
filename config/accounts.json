@@ -1,9 +1,8 @@
 
 {
-  "_comment": "Bluesky account configuration",
   "accounts": [
     {
-      "id": "my-bluesky",
+      "id": "instgramamps",
       "platform": "bluesky",
       "secrets": {
         "identifier": "BSKY_ID",
