@@ -1,12 +1,26 @@
 {
-  "checked_at": "2026-10-23T14:24:36Z",
+  "checked_at": "2026-10-23T16:23:19Z",
   "accounts": [
     {
       "account": "instgramamps",
       "platform": "bluesky",
-      "checked_at": "2026-10-23T14:24:35Z",
+      "checked_at": "2026-10-23T16:23:18Z",
       "ok": true,
       "identity": "instagramaps.bsky.social"
+    },
+    {
+      "account": "instagramaps-threads",
+      "platform": "threads",
+      "checked_at": "2026-10-23T16:23:19Z",
+      "ok": false,
+      "error": "missing secret(s): THREADS_TOKEN"
+    },
+    {
+      "account": "instagramaps-instagram",
+      "platform": "instagram",
+      "checked_at": "2026-10-23T16:23:19Z",
+      "ok": false,
+      "error": "missing secret(s): IG_TOKEN"
     }
   ]
 }
