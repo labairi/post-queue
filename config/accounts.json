@@ -26,15 +26,6 @@
       "secrets": {
         "access_token": "THREADS_TOKEN"
       }
-    },
-    {
-      "id": "instagramaps-facebook",
-      "platform": "facebook_page",
-      "workspace": "instagramaps",
-      "secrets": {
-        "page_token": "FB_PAGE_TOKEN"
-      },
-      "page_id": "1521470737710886"
     }
   ]
 }
