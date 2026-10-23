@@ -20,3 +20,4 @@
 {"account": "instgramamps", "adopted": false, "event": "published", "post_id": "pmvl8yuismei", "provider_post_id": "at://did:plc:3qlbljjqloi4pjkvebqnpdmf/app.bsky.feed.post/3mykpjrpu4f2x", "ts": "2026-10-23T17:33:06Z", "url": "https://bsky.app/profile/[redacted]/post/3mykpjrpu4f2x"}
 {"commands": 0, "event": "run_summary", "failed": 1, "healed": 0, "invalid": 0, "published": 1, "retry_waiting": 0, "skipped": 0, "ts": "2026-10-23T17:33:08Z", "uncertain": 0, "would_publish": 0}
 {"commands": 0, "event": "run_summary", "failed": 0, "healed": 0, "invalid": 0, "published": 0, "retry_waiting": 0, "skipped": 0, "ts": "2026-10-23T17:34:14Z", "uncertain": 0, "would_publish": 0}
+{"account": "instagramaps-instagram", "attempt": 1, "attempt_id": "dbe2772c8ddd", "event": "attempt", "post_id": "pmvl95bbr9kt", "ts": "2026-10-23T17:38:07Z"}
