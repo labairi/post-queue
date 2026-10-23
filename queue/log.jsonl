@@ -23,3 +23,4 @@
 {"account": "instagramaps-instagram", "attempt": 1, "attempt_id": "dbe2772c8ddd", "event": "attempt", "post_id": "pmvl95bbr9kt", "ts": "2026-10-23T17:38:07Z"}
 {"account": "instagramaps-instagram", "adopted": false, "event": "published", "post_id": "pmvl95bbr9kt", "provider_post_id": "18060660650583406", "ts": "2026-10-23T17:38:22Z", "url": "https://www.instagram.com/p/De2HK5wIMNd/"}
 {"account": "instgramamps", "attempt": 1, "attempt_id": "37f234b8397f", "event": "attempt", "post_id": "pmvl95bbr9kt", "ts": "2026-10-23T17:38:24Z"}
+{"account": "instgramamps", "adopted": false, "event": "published", "post_id": "pmvl95bbr9kt", "provider_post_id": "at://did:plc:3qlbljjqloi4pjkvebqnpdmf/app.bsky.feed.post/3mykptdyl7y2r", "ts": "2026-10-23T17:38:27Z", "url": "https://bsky.app/profile/[redacted]/post/3mykptdyl7y2r"}
