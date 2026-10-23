@@ -1,0 +1,9 @@
+{
+  "id": "pmvl95bbr9kt",
+  "title": "Hello man",
+  "primary": "Hello man",
+  "intent": "scheduled",
+  "scheduled": {"local": "2026-10-23T17:36", "tz": "Africa/Casablanca"},
+  "targets": [{"account": "instagramaps-instagram"}, {"account": "instgramamps"}],
+  "media": [{"type": "image", "url": "https://raw.githubusercontent.com/labairi/post-queue-dashboard/main/media/instagramaps/pmvl95bbr9kt-1.jpg"}]
+}
