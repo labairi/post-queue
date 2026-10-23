@@ -1,26 +1,26 @@
 {
-  "checked_at": "2026-10-23T16:38:13Z",
+  "checked_at": "2026-10-23T16:44:16Z",
   "accounts": [
     {
       "account": "instgramamps",
       "platform": "bluesky",
-      "checked_at": "2026-10-23T16:38:13Z",
+      "checked_at": "2026-10-23T16:44:15Z",
       "ok": false,
-      "error": "missing secret(s): BSKY_ID, BSKY_APP_PW"
+      "error": "Bluesky login: rejected (HTTP 401). {\"error\":\"AuthenticationRequired\",\"message\":\"Invalid identifier or password\"}"
     },
     {
       "account": "instagramaps-threads",
       "platform": "threads",
-      "checked_at": "2026-10-23T16:38:13Z",
+      "checked_at": "2026-10-23T16:44:16Z",
       "ok": false,
-      "error": "Threads identity: rejected (HTTP 400). {\"error\":{\"message\":\"Invalid OAuth access token - Cannot parse access token\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"AM3oVozMDO3nmtR5kRSXiyg\"}}"
+      "error": "Threads identity: rejected (HTTP 400). {\"error\":{\"message\":\"Invalid OAuth access token - Cannot parse access token\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"ASyjg93mSI9hBmUTLpjXUuA\"}}"
     },
     {
       "account": "instagramaps-instagram",
       "platform": "instagram",
-      "checked_at": "2026-10-23T16:38:13Z",
+      "checked_at": "2026-10-23T16:44:16Z",
       "ok": false,
-      "error": "Instagram identity: rejected (HTTP 400). {\"error\":{\"message\":\"Invalid OAuth access token - Cannot parse access token\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"AC7Gh-tUfyD1dQur9kQp2T-\"}}"
+      "error": "Instagram identity: rejected (HTTP 400). {\"error\":{\"message\":\"Invalid OAuth access token - Cannot parse access token\",\"type\":\"OAuthException\",\"code\":190,\"fbtrace_id\":\"AnavlrElZuNXHAqoyt2yOqZ\"}}"
     }
   ]
 }
