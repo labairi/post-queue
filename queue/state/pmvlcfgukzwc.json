@@ -1,6 +1,6 @@
 {
   "cancelled": false,
-  "content_hash": "6b0f2d0764f4826f66275c8ddb8eabb5a43734501a2f4db48b9b7efa816c1ad9",
+  "content_hash": "561d028be7fab7fc9fe0b37881a5beaf581a1269d75582d92d63b3790c4fa334",
   "force_now": false,
   "id": "pmvlcfgukzwc",
   "targets": {
@@ -28,15 +28,21 @@
       "url": "https://www.instagram.com/p/De2RtXQn14l/"
     },
     "instagramaps-threads": {
-      "attempts": 0,
-      "status": "pending"
+      "attempt_id": "bfede459947c",
+      "attempts": 1,
+      "content_hash": "561d028be7fab7fc9fe0b37881a5beaf581a1269d75582d92d63b3790c4fa334",
+      "error_kind": "",
+      "last_error": "",
+      "platform": "threads",
+      "started_at": "2026-10-23T19:10:31Z",
+      "status": "publishing"
     },
     "instgramamps": {
       "attempts": 0,
       "status": "pending"
     }
   },
-  "updated_at": "2026-10-23T19:10:30Z",
+  "updated_at": "2026-10-23T19:10:31Z",
   "validation_error": "",
   "version": 1
 }
