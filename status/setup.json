@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-10-23T14:07:26Z",
+  "checked_at": "2026-10-23T14:12:20Z",
   "accounts": [
     {
       "account": "my-bluesky",
       "platform": "bluesky",
-      "checked_at": "2026-10-23T14:07:26Z",
+      "checked_at": "2026-10-23T14:12:20Z",
       "ok": false,
-      "error": "missing secret(s): instgramamps, int2-enkr-dw34-amce"
+      "error": "Bluesky login: rejected (HTTP 401). {\"error\":\"AuthenticationRequired\",\"message\":\"Invalid identifier or password\"}"
     }
   ]
 }
