@@ -1,0 +1,21 @@
+{
+  "cancelled": false,
+  "content_hash": "d74cbdcab56ef3ec47aba9d609df34883df5c40a869444596ded9c2b86d40fda",
+  "force_now": false,
+  "id": "fb-test-2031",
+  "targets": {
+    "instagramaps-facebook": {
+      "attempt_id": "d47dbc380062",
+      "attempts": 1,
+      "content_hash": "d74cbdcab56ef3ec47aba9d609df34883df5c40a869444596ded9c2b86d40fda",
+      "error_kind": "",
+      "last_error": "",
+      "platform": "facebook_page",
+      "started_at": "2026-10-23T20:43:20Z",
+      "status": "publishing"
+    }
+  },
+  "updated_at": "2026-10-23T20:43:20Z",
+  "validation_error": "",
+  "version": 1
+}
