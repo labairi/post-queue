@@ -8,9 +8,7 @@ import sys
 from pathlib import Path
 
 from .http import Http
-from .importer import import_posts
 from .platforms import build_adapter
-from .prompts import build_prompt
 from .runner import run
 from .store import Store, display_status, redact
 from .timeutil import iso, utcnow
@@ -111,19 +109,6 @@ def cmd_check_setup(store: Store, a) -> int:
     return 1 if bad else 0
 
 
-def cmd_import(store: Store, a) -> int:
-    text = Path(a.file).read_text() if a.file and a.file != "-" else sys.stdin.read()
-    r = import_posts(store, text)
-    print(json.dumps(r, indent=2, ensure_ascii=False))
-    git_checkpoint("social: import drafts")
-    return 1 if r["rejected"] else 0
-
-
-def cmd_prompt(store: Store, a) -> int:
-    print(build_prompt(store.read_json(store.config / "brand.json", {}) or {}, store.accounts(), a.request, a.count))
-    return 0
-
-
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="socialpub")
     ap.add_argument("--root", default=str(ROOT))
@@ -132,12 +117,9 @@ def main(argv=None) -> int:
     sub.add_parser("status")
     r = sub.add_parser("run"); r.add_argument("--dry-run", action="store_true"); r.add_argument("--post")
     sub.add_parser("check-setup")
-    i = sub.add_parser("import"); i.add_argument("file", nargs="?", default="-")
-    pr = sub.add_parser("prompt"); pr.add_argument("request"); pr.add_argument("--count", type=int, default=3)
     a = ap.parse_args(argv)
     store = Store(a.root)
-    return {"validate": cmd_validate, "status": cmd_status, "run": cmd_run, "check-setup": cmd_check_setup,
-            "import": cmd_import, "prompt": cmd_prompt}[a.cmd](store, a)
+    return {"validate": cmd_validate, "status": cmd_status, "run": cmd_run, "check-setup": cmd_check_setup}[a.cmd](store, a)
 
 
 if __name__ == "__main__":

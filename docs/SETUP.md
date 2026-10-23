@@ -23,7 +23,7 @@ Edit `config/accounts.json`. It holds **names of secrets, never the secrets**:
   { "id": "my-ig", "platform": "instagram", "ig_user_id": "17841400000000000", "secrets": { "access_token": "IG_TOKEN" } }
 ] }
 ```
-`id` is any short name using lowercase letters, digits, `-` or `_`. Add only the accounts you really have. Also fill `config/brand.json` (name, website, voice, true facts, words to avoid): the AI prompt uses it.
+`id` is any short name using lowercase letters, digits, `-` or `_`. Add only the accounts you really have.
 
 ## 4. [once] Store the secret values
 Repository, Settings, Secrets and variables, Actions, **New repository secret**. Name: `SOCIAL_SECRETS`. Value: one JSON object mapping each secret name to its value:
@@ -36,7 +36,7 @@ Never paste these into a file in the repository, an issue or a chat. To change o
 Actions tab, **social-publish**, Run workflow, mode **check-setup**. It logs in or reads each account's identity and never posts. Results appear in the run summary and on the dashboard's Accounts page. Fix anything marked ✗ before going on.
 
 ## 6. [once] Create a dashboard token
-GitHub, Settings, Developer settings, **Fine-grained tokens**, Generate. Repository access: **only this repository** (plus your media repository if you use uploads). Permissions: **Contents: Read and write**, **Actions: Read and write**, nothing else. Set an expiry of 30 to 90 days.
+GitHub, Settings, Developer settings, **Fine-grained tokens**, Generate. Repository access: this repository **and** the public repository that holds your uploaded photos and videos. Permissions: **Contents: Read and write**, **Actions: Read and write**, nothing else. Set an expiry of 30 to 90 days.
 
 ## 7. [once] Host the dashboard
 The dashboard is one file, `dashboard/index.html`, with no data or secrets inside. Options:

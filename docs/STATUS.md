@@ -18,12 +18,12 @@ Verification levels used below:
 | Cancel / retry / publish now / mark published | Dashboard writes a command file; the next run applies it |
 | Secrets handling | One GitHub secret; accounts file holds names only; values redacted from logs and state |
 | Bluesky, Mastodon, Threads, Facebook Page, Instagram adapters | Request shapes tested; see PLATFORMS.md for limits |
-| Dashboard: overview, editor with per-platform versions and counts, drafts, queue, calendar, published, failed, media, accounts, logs, setup | Tested in Chromium against a fake GitHub API |
-| AI prompt builder and JSON import | Always creates drafts; no paid AI API involved |
+| Dashboard (Content Desk): calendar, new post with per-platform character counts, posts list with status and actions, accounts, setup, activity log | Tested in Chromium against a fake GitHub API |
+| Workspaces (one per brand), connect-an-account screen, upload photos/videos (photos converted to JPEG), calendar |  Tested in Chromium against a fake GitHub API |
 | GitHub Actions workflows | Written and YAML-checked; **never run on GitHub yet** |
 
 ## Partial
-- **Media upload from the dashboard** goes to a public repository you configure. Written, but only the form is browser-tested; the upload call itself is not covered. Instagram requires JPEG.
+- **Media upload from the dashboard** goes to a public repository you configure (browser-tested against a fake GitHub; not yet against the real one). Photos are converted to JPEG. Videos are uploaded as-is, up to 25 MB.
 - **Facebook Page and Instagram** need a Meta app and tokens; if Meta requires app review for your use, that is outside this tool (PLATFORMS.md).
 - **Token renewal**: Threads long-lived tokens last about 60 days and are **not** renewed automatically. A Page token derived from a long-lived user token does not expire. Bluesky app passwords and Mastodon tokens do not expire unless you revoke them.
 - **Exact timing**: posts go out on the hourly run after their time, usually within minutes, sometimes much later. Not exact-second scheduling.

@@ -3,7 +3,6 @@ from datetime import datetime, timezone
 
 import pytest
 
-from socialpub.importer import import_posts, parse_ai_output
 from socialpub.store import Store, StoreError, content_hash, display_status, redact
 from socialpub.timeutil import TimeError, to_utc
 from socialpub.validate import derived_text, validate_accounts, validate_post
@@ -153,25 +152,6 @@ def test_log_redacts(tmp_path):
     s.log("x", "pid-one", error="boom TOPSECRET99")
     assert "TOPSECRET99" not in s.log_path.read_text()
 
-
-# ---------- AI import ----------
-def test_import_makes_drafts_only_and_never_overwrites(tmp_path):
-    s = make_store(tmp_path)
-    txt = '```json\n[{"title":"A post","primary":"hi","targets":[{"account":"m1"}],"scheduled":{"local":"2026-10-25T10:00","tz":"UTC"},"intent":"scheduled","evil":1}]\n```'
-    r1 = import_posts(s, txt); r2 = import_posts(s, txt)
-    assert len(r1["saved"]) == 1 and len(r2["saved"]) == 1 and r1["saved"] != r2["saved"]
-    p = s.load_post(r1["saved"][0])
-    assert p["intent"] == "draft" and "scheduled" not in p and "evil" not in p
-
-def test_import_rejects_invalid(tmp_path):
-    r = import_posts(make_store(tmp_path), '{"posts":[{"title":"x","primary":"hi","targets":[{"account":"ghost"}]}]}')
-    assert r["saved"] == [] and r["rejected"][0]["errors"]
-
-def test_parse_ai_output_errors():
-    with pytest.raises(ValueError):
-        parse_ai_output("sorry, I cannot")
-    with pytest.raises(json.JSONDecodeError):
-        parse_ai_output("[{bad json")
 
 
 def test_accounts_with_workspace_field_validate():

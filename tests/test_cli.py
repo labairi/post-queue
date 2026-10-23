@@ -47,11 +47,3 @@ def test_check_setup_reports_missing_secret_and_never_posts(tmp_path, monkeypatc
     assert "missing secret(s): THREADS_TOKEN" in capsys.readouterr().out
     assert json.loads((tmp_path / "status" / "setup.json").read_text())["accounts"][0]["ok"] is False
 
-
-def test_import_and_prompt_commands(tmp_path, capsys, monkeypatch):
-    s = make_store(tmp_path)
-    f = tmp_path / "ai.json"; f.write_text('[{"title":"Hello","primary":"hi","targets":[{"account":"m1"}]}]')
-    assert main(["--root", str(tmp_path), "import", str(f)]) == 0
-    assert len(s.post_ids()) == 1 and s.load_post(s.post_ids()[0])["intent"] == "draft"
-    main(["--root", str(tmp_path), "prompt", "Announce X"])
-    assert "Announce X" in capsys.readouterr().out

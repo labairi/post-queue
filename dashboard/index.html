@@ -54,21 +54,29 @@ table{border-collapse:collapse;width:100%}th,td{text-align:left;padding:6px 8px;
 code,pre{font-family:var(--mono);font-size:12.5px}
 pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px;overflow:auto;white-space:pre-wrap;word-break:break-word}
 .cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
-.cal div{border:1px solid var(--line);border-radius:6px;min-height:70px;padding:4px;font-size:12px;overflow:hidden}
+.cal>div{border:1px solid var(--line);border-radius:6px;min-height:70px;padding:4px;font-size:12px;overflow:hidden}
 .cal .h{min-height:0;border:0;color:var(--mute);font-weight:600}
 .cal .ev{display:block;background:var(--info-bg);color:var(--info);border-radius:3px;padding:0 4px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;border:0;width:100%;text-align:left;font-size:12px}
 .media{display:flex;flex-wrap:wrap;gap:8px}.media figure{margin:0;width:130px}.media img,.media video{width:130px;height:90px;object-fit:cover;border-radius:6px;background:var(--line)}
 .media figcaption{font-size:11px;word-break:break-all}
+.chk{display:inline-flex;gap:6px;align-items:center;margin:4px 14px 0 0;font-weight:400}
+label.sub{font-weight:500;color:var(--mute);margin-top:4px}
+.badtxt{color:var(--bad)}.stats{display:flex;flex-wrap:wrap;gap:6px 18px}.stats b{font-size:18px}
+.cal .blank{border:0;min-height:0}.cal .day{min-height:78px}.cal .day.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.add{background:none;border:1px solid var(--line);color:var(--mute);border-radius:4px;width:20px;height:20px;line-height:1;padding:0;font-size:14px}.add:hover{color:var(--accent);border-color:var(--accent)}
+.cal .ev.published{background:var(--good-bg);color:var(--good)}.cal .ev.failed,.cal .ev.cancelled{background:var(--bad-bg);color:var(--bad)}.cal .ev.uncertain,.cal .ev.partial{background:var(--warn-bg);color:var(--warn)}.cal .ev.draft{background:var(--bg);color:var(--mute);border:1px dashed var(--line)}
+.mrow{display:flex;gap:10px;align-items:center;margin:6px 0}.thumb{width:84px;height:64px;flex:none;background:var(--line);border-radius:6px;overflow:hidden}.thumb img,.thumb video{width:100%;height:100%;object-fit:cover}
+.grid.wide{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}.tile{margin:0}
 .empty{color:var(--mute);text-align:center;padding:24px 8px}
 dialog{border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);max-width:min(460px,92vw)}
-@media (max-width:560px){.cal div{min-height:48px}.cal .ev{font-size:10px}}
+@media (max-width:560px){.cal>div{min-height:48px}.cal .ev{font-size:10px}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
   <h1>Content Desk <span class="mute small" id="repoLabel"></span></h1>
-  <div class="row"><label class="small mute" for="wsSel" style="margin:0">Workspace</label><select id="wsSel" style="width:auto;min-width:150px" aria-label="Workspace"></select><span class="small mute" id="loaded"></span><button class="b alt" id="reload">Reload</button></div>
+  <div class="row"><label class="small mute" for="wsSel" style="margin:0">Workspace</label><select id="wsSel" style="width:auto;min-width:150px" aria-label="Workspace"></select><button class="b alt" id="wsAdd" title="New workspace" aria-label="New workspace" hidden>＋</button><span class="small mute" id="loaded"></span><button class="b alt" id="reload">Reload</button></div>
 </header>
 <nav id="nav" aria-label="Sections"></nav>
 <div id="msg" role="status" aria-live="polite"></div>
@@ -78,7 +86,7 @@ dialog{border:1px solid var(--line);border-radius:10px;background:var(--panel);c
 
 <script>
 /*RULES*/const RULES = {"bluesky": {"image": true, "label": "Bluesky", "max_chars": 300, "max_images": 4, "requires_media": false, "requires_video": false, "status": "implemented", "title_required": false, "video": false}, "facebook_page": {"image": true, "label": "Facebook Page", "max_chars": 63206, "max_images": 1, "requires_media": false, "requires_video": false, "status": "implemented", "title_required": false, "video": true}, "instagram": {"daily_cap": 100, "image": true, "image_ext": ["jpg", "jpeg"], "label": "Instagram", "max_chars": 2200, "max_images": 1, "requires_media": true, "requires_video": false, "status": "implemented", "title_required": false, "video": true}, "linkedin": {"image": true, "label": "LinkedIn", "max_chars": 3000, "max_images": 20, "requires_media": false, "requires_video": false, "status": "not_implemented", "title_required": false, "video": true, "why": "Needs the LinkedIn 'Share on LinkedIn' product; company pages need Community Management API approval."}, "linkedin_page": {"image": true, "label": "LinkedIn Page", "max_chars": 3000, "max_images": 20, "requires_media": false, "requires_video": false, "status": "not_implemented", "title_required": false, "video": true, "why": "Company pages need Community Management API approval (about 1 to 2 weeks)."}, "mastodon": {"image": true, "label": "Mastodon", "max_chars": 500, "max_images": 4, "requires_media": false, "requires_video": false, "status": "implemented", "title_required": false, "video": true}, "threads": {"daily_cap": 250, "image": true, "label": "Threads", "max_chars": 500, "max_images": 1, "requires_media": false, "requires_video": false, "status": "implemented", "title_required": false, "video": true}, "tiktok": {"image": false, "label": "TikTok", "max_chars": 2200, "max_images": 0, "requires_media": true, "requires_video": true, "status": "not_implemented", "title_required": false, "video": true, "why": "Posts from an unaudited app are private-only until TikTok audits the app."}, "x": {"image": true, "label": "X", "max_chars": 280, "max_images": 4, "requires_media": false, "requires_video": false, "status": "not_implemented", "title_required": false, "video": true, "why": "X has no free posting tier for new developers; posting is pay-per-use."}, "youtube": {"image": false, "label": "YouTube", "max_chars": 5000, "max_images": 0, "requires_media": true, "requires_video": true, "status": "not_implemented", "title_max": 100, "title_required": true, "video": true, "why": "Needs a Google Cloud project with OAuth consent; check the upload quota and visibility rules for unverified projects."}};/*END*/
-const PAGES = [["overview","Overview"],["compose","New / edit"],["drafts","Drafts"],["queue","Queue"],["calendar","Calendar"],["published","Published"],["failed","Failed"],["media","Media"],["accounts","Accounts"],["logs","Logs"],["ai","AI import"],["setup","Setup"]];
+const PAGES = [["calendar","Calendar"],["compose","New post"],["posts","Posts"],["accounts","Accounts"],["setup","Setup"]];
 const WORKFLOW = "social-publish.yml";
 const TOP_KEYS = ["id","title","campaign","hook","headline","description","primary","alt","cta","hashtags","intent","scheduled","targets","versions","media","settings","created_at","updated_at","notes"];
 const $ = (s, r=document) => r.querySelector(s);
@@ -203,15 +211,15 @@ function displayStatus(post, st){
 }
 
 /* ---------- data ---------- */
-let D = null;          // { accounts, posts:{id:{post,sha}}, states:{id:{state}}, log:[], setup, runs, at }
-let route = "overview", editing = null;
+let D = null;          // { accounts, workspaces, posts:{id:{post,sha}}, states:{id:state}, log:[], setup, runs, at }
+let route = "calendar", editing = null, filter = "all", calY = null, calM = null, connecting = null, justAdded = null, uploading = 0;
 
 function say(kind, text){ $("#msg").innerHTML = text ? `<div class="notice ${kind}">${esc(text)}</div>` : ""; }
 async function load(){
   const c = cfg();
-  $("#repoLabel").textContent = c.owner ? `· ${c.owner}/${c.repo}` : "";
+  $("#repoLabel").textContent = "";
   if(!c.token || !c.owner || !c.repo){ D = null; return; }
-  say("info", "Loading from GitHub…");
+  say("info", "Loading…");
   const out = { posts:{}, states:{}, log:[], runs:null, errors:[] };
   try {
     const acc = await readJson("config/accounts.json", {accounts:[]});
@@ -227,95 +235,196 @@ async function load(){
     out.log = lg ? lg.text.split("\n").filter(Boolean).map(l=>{ try { return JSON.parse(l); } catch(e){ return null; } }).filter(Boolean) : [];
     out.setup = await readJson("status/setup.json", null);
     const wf = await readJson("config/workspaces.json", null);
-    out.workspaces = wf && !wf.__broken && Array.isArray(wf.workspaces) && wf.workspaces.length ? wf.workspaces : [{id:"all", name:"All accounts", status:"active"}];
-    const br = await readJson("config/brand.json", {}); out.brand = br && !br.__broken ? br : {};
+    out.workspaces = wf && !wf.__broken && Array.isArray(wf.workspaces) && wf.workspaces.length ? wf.workspaces : [];
     try { out.runs = (await gh("GET", `${repoUrl()}/actions/workflows/${WORKFLOW}/runs?per_page=15`)).workflow_runs; } catch(e){ out.errors.push("Workflow runs: " + e.message); }
-    out.at = new Date();
-    D = out; say("", "");
+    out.at = new Date(); D = out; say("", "");
     $("#loaded").textContent = "Loaded " + out.at.toLocaleTimeString();
     if(out.errors.length) say("warn", out.errors.join(" · "));
   } catch(e){ D = null; say("err", e.message); }
 }
-const statusOf = id => { const p = D.posts[id]; return p ? displayStatus(p.post, D.states[id]) : "draft"; };
-const curWs = () => { const l = D.workspaces, w = store.get("pq.ws"); return (l.find(x=>x.id===w) || l.find(x=>x.status!=="paused") || l[0]); };
-const wsOf = acc => (D.accounts[acc]||{}).workspace || D.workspaces[0].id;
-const inWs = acc => wsOf(acc) === curWs().id;
-const visible = id => { const t = (D.posts[id].post.targets||[]); return !t.length || t.some(x => inWs(x.account)); };
+const hasWs = () => D && D.workspaces.length > 0;
+const curWs = () => { const l = D.workspaces, w = store.get("pq.ws"); return l.find(x=>x.id===w) || l[0]; };
+const wsOf = acc => (D.accounts[acc]||{}).workspace || (D.workspaces[0]||{}).id;
+const inWs = acc => hasWs() && wsOf(acc) === curWs().id;
 const wsAccounts = () => Object.values(D.accounts||{}).filter(a => inWs(a.id));
-const ids = pred => Object.keys(D.posts).filter(id => visible(id) && pred(statusOf(id), id)).sort((a,b) => (D.posts[b].post.updated_at||"").localeCompare(D.posts[a].post.updated_at||""));
+const visible = id => { const t = (D.posts[id].post.targets||[]); return !t.length || t.some(x => inWs(x.account)); };
+const statusOf = id => { const p = D.posts[id]; return p ? displayStatus(p.post, D.states[id]) : "draft"; };
+const NEEDS = ["failed","uncertain","partial","cancelled"];
+const myIds = () => Object.keys(D.posts).filter(visible).sort((a,b) => (D.posts[b].post.updated_at||"").localeCompare(D.posts[a].post.updated_at||""));
+
+/* ---------- time helpers ---------- */
+function localFromMs(ms, tz){
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:tz,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}).formatToParts(new Date(ms)).map(x=>[x.type,x.value]));
+  return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
+}
+const browserTz = () => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"; } catch(e){ return "UTC"; } };
+const wsTz = () => (curWs() && curWs().tz) || browserTz();
+function zones(){ try { return Intl.supportedValuesOf("timeZone"); } catch(e){ return ["UTC","Africa/Casablanca","Europe/Paris","Europe/London","America/New_York","America/Los_Angeles","Asia/Dubai","Asia/Tokyo"]; } }
+const nextHourLocal = tz => { const t = new Date(Date.now() + 3600e3); t.setMinutes(0,0,0); return localFromMs(t.getTime(), tz); };
 
 /* ---------- actions ---------- */
 function confirmBox(text){ return new Promise(res => { const d = $("#dlg"); $("#dlgText").textContent = text; d.addEventListener("close", () => res(d.returnValue==="ok"), {once:true}); d.returnValue = ""; if(d.showModal) d.showModal(); else res(true); }); }
 async function command(obj, okMsg){
-  try { await writeFile(`queue/commands/${crypto.randomUUID()}.json`, JSON.stringify(obj, null, 2)+"\n", `social: ${obj.action} ${obj.post_id}`); say("ok", okMsg); }
-  catch(e){ say("err", e.message); }
+  try { await writeFile(`queue/commands/${crypto.randomUUID()}.json`, JSON.stringify(obj, null, 2)+"\n", `social: ${obj.action} ${obj.post_id}`); if(okMsg) say("ok", okMsg); return true; }
+  catch(e){ say("err", e.message); return false; }
 }
 async function runQueue(mode, allow){
-  try { await dispatch(mode, allow); say("ok", `Started “${mode}”. It takes about a minute. Press Reload afterwards.`); }
-  catch(e){ say("err", e.message + (e.status===404 ? " (Is the workflow file on the branch you configured?)" : "")); }
+  try { await dispatch(mode, allow); say("ok", mode==="publish-due" ? "Started. Posts that are due are being published. Press Reload in about a minute." : `Started “${mode}”. It takes about a minute. Press Reload afterwards.`); return true; }
+  catch(e){ say("err", e.message + (e.status===404 ? " (Is the workflow file on the branch you configured?)" : "")); return false; }
 }
+function sortKeys(o){ const s = v => Array.isArray(v) ? v.map(s) : (v && typeof v==="object") ? Object.fromEntries(Object.keys(v).sort().map(k=>[k,s(v[k])])) : v; return JSON.stringify(s(o), null, 2)+"\n"; }
 async function savePost(post){
   const cur = D && D.posts[post.id];
   const out = { ...post }; out.updated_at = new Date().toISOString().replace(/\.\d+Z$/,"Z"); out.created_at = out.created_at || out.updated_at;
   const clean = Object.fromEntries(Object.entries(out).filter(([k,v]) => TOP_KEYS.includes(k) && v !== undefined));
   await writeFile(`queue/posts/${post.id}.json`, sortKeys(clean), `social: save ${post.id}`, cur && cur.sha);
 }
-function sortKeys(o){ const s = v => Array.isArray(v) ? v.map(s) : (v && typeof v==="object") ? Object.fromEntries(Object.keys(v).sort().map(k=>[k,s(v[k])])) : v; return JSON.stringify(s(o), null, 2)+"\n"; }
+const slugify = t => { const s = String(t).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,30).replace(/-+$/,""); return s.length>=3 ? s : "post"; };
+const newId = t => `${slugify(t)}-${Math.random().toString(36).slice(2,6)}`;
 
 /* ---------- views ---------- */
 const V = {};
-function when(post){ const s = post.scheduled; return s && s.local ? `${s.local.replace("T"," ")} ${s.tz}` : "—"; }
-function pill(s){ return `<span class="pill ${esc(s)}">${esc(s)}</span>`; }
-function targetsLine(id){ const st = D.states[id]; const p = D.posts[id].post;
-  return (p.targets||[]).map(t => { const x = st && st.targets && st.targets[t.account]; return `<span class="small">${esc(t.account)}: ${pill(x ? x.status : (p.intent==="scheduled"?"scheduled":"draft"))}${x && x.url ? ` <a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">open</a>`:""}</span>`; }).join(" "); }
-function postItem(id, actions){
-  const p = D.posts[id].post, st = D.states[id], s = statusOf(id);
-  const errs = Object.entries((st||{}).targets||{}).filter(([,t])=>t.last_error).map(([a,t])=>`<div class="small" style="color:var(--bad)">${esc(a)}: ${esc(t.last_error)}${t.next_attempt_at?` Next try: ${esc(t.next_attempt_at)}`:""}</div>`).join("");
-  return `<li><div class="row split"><div style="min-width:0"><b>${esc(p.title||id)}</b> ${pill(s)} <span class="mute small">${esc(when(p))}</span><div class="small mute">${esc((p.primary||"").slice(0,140))}</div><div>${targetsLine(id)}</div>${errs}</div><div class="row">${actions(id,s)}</div></li>`;
-}
+const pill = s => `<span class="pill ${esc(s)}">${esc(s==="uncertain"?"check needed":s)}</span>`;
+const when = p => { const s = p.scheduled; return s && s.local ? `${s.local.replace("T"," ")} (${s.tz})` : "not scheduled"; };
 const btn = (act, id, label, cls="alt", extra="") => `<button class="b ${cls}" data-act="${act}" data-id="${esc(id)}" ${extra}>${esc(label)}</button>`;
-const needSetup = () => `<div class="card"><h2>Connect your repository</h2><p>Open <b>Setup</b> and enter the repository and a GitHub token. Nothing is loaded until then.</p></div>`;
+const accLabel = a => { const x = D.accounts[a]; const r = x && RULES[x.platform]; return r ? `${r.label}` : a; };
 
-V.overview = () => {
-  const cnt = s => ids(x=>x===s).length;
-  const lastRun = D.runs && D.runs[0];
-  const next = Object.keys(D.posts).filter(i=>visible(i) && statusOf(i)==="scheduled").map(i=>[i, safeUtc(D.posts[i].post)]).filter(x=>x[1]).sort((a,b)=>a[1]-b[1])[0];
-  const none = !wsAccounts().length;
-  return (none ? `<div class="card"><h2>Connect your first account</h2><p>${esc(curWs().name)} has no connected social accounts yet. Pick a platform to start; each one shows exactly what you need.</p><button class="b" data-go="accounts">Connect an account</button></div>` : "") + `<div class="grid">${["draft","scheduled","published","failed","uncertain"].map(s=>`<div class="card stat"><b>${cnt(s)}</b><span>${s}</span></div>`).join("")}</div>
-  <div class="card"><h2>Next up</h2>${next?`<b>${esc(D.posts[next[0]].post.title||next[0])}</b> <span class="mute">${esc(new Date(next[1]).toLocaleString())} your time</span>`:`<span class="mute">Nothing is scheduled.</span>`}</div>
-  <div class="card"><h2>Queue runs</h2>${lastRun?`<p>Last run: <b>${esc(lastRun.conclusion||lastRun.status)}</b> at ${esc(new Date(lastRun.created_at).toLocaleString())} (${esc(lastRun.event)}). <a href="${esc(lastRun.html_url)}" target="_blank" rel="noopener noreferrer">Open on GitHub</a></p>`:`<p class="mute">No runs found yet. GitHub starts the hourly run by itself once the workflow is on the main branch.</p>`}
-  <p class="small mute">Posts go out on the next hourly run after their time, usually within minutes, sometimes later when GitHub is busy. This is not exact-second scheduling.</p>
-  <div class="row"><button class="b alt" data-act="run" data-mode="dry-run">Dry run (sends nothing)</button><button class="b" data-act="run" data-mode="publish-due">Publish due posts now</button></div></div>
-  <div class="card"><h2>Analytics</h2><p class="mute">Only what this tool has recorded: the counts above and the Logs page. Likes, reach and impressions are not collected, so none are shown (they are not zero, they are unknown).</p></div>`;
-};
-function safeUtc(p){ try { return localToUtcMs(p.scheduled.local, p.scheduled.tz); } catch(e){ return null; } }
-
-V.drafts = () => { const l = ids(s=>s==="draft"); return `<div class="card">${l.length?`<ul class="list">${l.map(id=>postItem(id,(i)=>btn("edit",i,"Edit","alt")+btn("delete",i,"Delete","danger"))).join("")}</ul>`:`<div class="empty">No drafts. Use “New / edit”, or the AI import page.</div>`}</div>`; };
-V.queue = () => { const l = ids(s=>["scheduled","publishing","uncertain","partial"].includes(s)); return `<div class="card">${l.length?`<ul class="list">${l.map(id=>postItem(id,(i,s)=>btn("edit",i,"Edit")+(s==="scheduled"?btn("now",i,"Publish now","b")+btn("cancel",i,"Cancel","danger"):"")+(s==="uncertain"||s==="partial"?btn("resolve",i,"Resolve…"):"" ))).join("")}</ul>`:`<div class="empty">Nothing is waiting.</div>`}</div>`; };
-V.published = () => { const l = ids(s=>s==="published"); return `<div class="card">${l.length?`<ul class="list">${l.map(id=>postItem(id,()=>"")).join("")}</ul>`:`<div class="empty">Nothing has been confirmed as published yet. A post only appears here after the platform confirmed it.</div>`}</div>`; };
-V.failed = () => { const l = ids(s=>["failed","cancelled"].includes(s)); return `<div class="card">${l.length?`<ul class="list">${l.map(id=>postItem(id,(i)=>btn("retry",i,"Retry","b")+btn("edit",i,"Edit"))).join("")}</ul>`:`<div class="empty">No failed posts.</div>`}<p class="small mute">Errors that are not temporary are not retried automatically. Fix the cause (usually the token or the media), then press Retry.</p></div>`; };
-
+function stats(){
+  const l = myIds().map(statusOf), n = s => l.filter(x=>x===s).length, bad = l.filter(x=>NEEDS.includes(x)).length;
+  return `<span><b>${n("scheduled")+n("publishing")}</b> scheduled</span><span><b>${n("published")}</b> published</span><span><b>${n("draft")}</b> drafts</span><span class="${bad?"badtxt":""}"><b>${bad}</b> need attention</span>`;
+}
 V.calendar = () => {
-  const now = new Date(); const y = V.calY ?? now.getFullYear(), m = V.calM ?? now.getMonth();
+  if(!hasWs()) return noWorkspace();
+  const w = curWs(), mine = wsAccounts(), now = new Date(), tz = wsTz();
+  const y = calY ?? now.getFullYear(), m = calM ?? now.getMonth();
   const first = new Date(y,m,1), pad = (first.getDay()+6)%7, days = new Date(y,m+1,0).getDate();
-  const by = {}; Object.keys(D.posts).filter(visible).forEach(id => { const p = D.posts[id].post; if(p.scheduled && p.scheduled.local){ const d = p.scheduled.local.slice(0,10); (by[d] ||= []).push(id); } });
-  let cells = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d=>`<div class="h">${d}</div>`).join("") + "<div style='border:0'></div>".repeat(pad);
+  const by = {}; myIds().forEach(id => { const p = D.posts[id].post; if(p.scheduled && p.scheduled.local) (by[p.scheduled.local.slice(0,10)] ||= []).push(id); });
+  const today = localFromMs(Date.now(), tz).slice(0,10);
+  let cells = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d=>`<div class="h">${d}</div>`).join("") + "<div class='blank'></div>".repeat(pad);
   for(let d=1; d<=days; d++){ const key = `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-    cells += `<div><b>${d}</b>${(by[key]||[]).map(id=>`<button class="ev" data-act="edit" data-id="${esc(id)}" title="${esc(D.posts[id].post.title||id)}">${esc(D.posts[id].post.scheduled.local.slice(11))} ${esc(D.posts[id].post.title||id)}</button>`).join("")}</div>`; }
-  return `<div class="card"><div class="row split"><button class="b alt" data-act="calprev">‹</button><h2>${esc(first.toLocaleString(undefined,{month:"long",year:"numeric"}))}</h2><button class="b alt" data-act="calnext">›</button></div><div class="cal">${cells}</div><p class="small mute">Times are the local time you chose for each post, in that post's own time zone.</p></div>`;
+    cells += `<div class="day ${key===today?"today":""}"><div class="row split"><b>${d}</b><button class="add" data-act="newon" data-date="${key}" aria-label="Add a post on ${key}" title="Add a post on this day">+</button></div>${(by[key]||[]).map(id=>{ const p = D.posts[id].post; return `<button class="ev ${esc(statusOf(id))}" data-act="edit" data-id="${esc(id)}" title="${esc(p.title||id)} · ${esc(statusOf(id))}">${esc(p.scheduled.local.slice(11))} ${esc(p.title||id)}</button>`; }).join("")}</div>`; }
+  const last = D.runs && D.runs[0];
+  return (mine.length ? "" : `<div class="card"><h2>Connect your first account</h2><p>${esc(w.name)} has no social accounts yet. Connect one, then add posts to the calendar.</p><button class="b" data-go="accounts">Connect an account</button></div>`) +
+  `<div class="card"><div class="row split"><div class="stats">${stats()}</div><div class="row"><button class="b" data-go="compose">New post</button><button class="b alt" data-act="publishdue">Publish due posts now</button></div></div>
+   <p class="small mute" style="margin:8px 0 0">Posts go out automatically on the first hourly run after their time (usually within minutes, sometimes later). Calendar times are in each post's own time zone.${last?` Last run: ${esc(last.conclusion||last.status)} at ${esc(new Date(last.created_at).toLocaleString())}.`:""}</p></div>
+   <div class="card"><div class="row split"><button class="b alt" data-act="calprev" aria-label="Previous month">‹</button><h2 style="margin:0">${esc(first.toLocaleString(undefined,{month:"long",year:"numeric"}))}</h2><button class="b alt" data-act="calnext" aria-label="Next month">›</button></div><div class="cal">${cells}</div></div>`;
+};
+function noWorkspace(){ return `<div class="card"><h2>Create your first workspace</h2><p>A workspace is one brand or project, with its own social accounts, posts and calendar.</p><button class="b" data-act="newws">Create a workspace</button></div>`; }
+
+function targetsLine(id){ const st = D.states[id], p = D.posts[id].post;
+  return (p.targets||[]).map(t => { const x = st && st.targets && st.targets[t.account]; return `<span class="small">${esc(accLabel(t.account))}: ${pill(x ? x.status : (p.intent==="scheduled"?"scheduled":"draft"))}${x && x.url ? ` <a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">open</a>`:""}</span>`; }).join(" "); }
+function postItem(id){
+  const p = D.posts[id].post, st = D.states[id], s = statusOf(id);
+  const errs = Object.entries((st||{}).targets||{}).filter(([,t])=>t.last_error).map(([a,t])=>`<div class="small badtxt">${esc(accLabel(a))}: ${esc(t.last_error)}${t.next_attempt_at?` Next try: ${esc(t.next_attempt_at)}`:""}</div>`).join("");
+  const acts = (s==="draft"||s==="scheduled"||s==="cancelled" ? btn("edit",id,"Edit") : "") + (s==="scheduled" ? btn("now",id,"Post now","b")+btn("cancel",id,"Cancel","danger") : "") + (s==="draft" ? btn("delete",id,"Delete","danger") : "") + (s==="failed"||s==="cancelled" ? btn("retry",id,"Retry","b") : "") + (s==="uncertain"||s==="partial" ? btn("resolve",id,"Check…","b") : "");
+  const m = (p.media||[]).length;
+  return `<li><div class="row split"><div style="min-width:0"><b>${esc(p.title||id)}</b> ${pill(s)} <span class="mute small">${esc(when(p))}${m?` · ${m} media`:""}</span><div class="small mute">${esc((p.primary||"").slice(0,160))}</div><div>${targetsLine(id)}</div>${errs}</div><div class="row">${acts}</div></li>`;
+}
+V.posts = () => {
+  if(!hasWs()) return noWorkspace();
+  const chips = [["all","All"],["draft","Drafts"],["scheduled","Scheduled"],["published","Published"],["attention","Need attention"]];
+  const l = myIds().filter(id => { const s = statusOf(id); return filter==="all" || (filter==="attention" ? NEEDS.includes(s) : filter==="scheduled" ? ["scheduled","publishing"].includes(s) : s===filter); });
+  const rows = D.log.filter(r => !r.account || inWs(r.account)).slice(-100).reverse();
+  return `<div class="card"><div class="row" role="group" aria-label="Filter posts">${chips.map(([k,t])=>`<button class="b ${filter===k?"":"alt"}" data-act="filter" data-k="${k}">${t}</button>`).join("")}</div>
+  ${l.length?`<ul class="list">${l.map(postItem).join("")}</ul>`:`<div class="empty">${filter==="all"?"No posts yet. Press “New post” to add your first one.":"Nothing here."}</div>`}
+  <p class="small mute">If something failed for a reason that is not temporary, it is not retried automatically. Fix the cause (usually the account connection or the media), then press Retry. “Check needed” means the platform did not answer, so look at the account before choosing.</p></div>
+  <details class="card"><summary><b>Activity log</b></summary>${rows.length?`<div class="tbl"><table><thead><tr><th>Time (UTC)</th><th>Event</th><th>Post</th><th>Account</th><th>Detail</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.ts)}</td><td>${esc(r.event)}</td><td>${esc(r.post_id||"")}</td><td>${esc(r.account||"")}</td><td class="small">${esc(Object.entries(r).filter(([k])=>!["ts","event","post_id","account"].includes(k)).map(([k,v])=>`${k}=${v}`).join(" "))}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">Nothing yet.</div>`}</details>`;
 };
 
-V.media = () => {
-  const items = []; Object.keys(D.posts).filter(visible).forEach(id => (D.posts[id].post.media||[]).forEach(m => items.push({...m, post:id})));
-  const c = cfg();
-  return `<div class="card"><h2>Media used by your posts</h2>${items.length?`<div class="media">${items.map(m=>`<figure>${m.type==="video"?`<video src="${esc(m.url)}" preload="metadata" muted></video>`:`<img src="${esc(m.url)}" alt="${esc(m.alt||"")}" loading="lazy">`}<figcaption>${esc(m.post)}<br>${esc(m.url.split("/").pop())}</figcaption></figure>`).join("")}</div>`:`<div class="empty">No media yet.</div>`}</div>
-  <div class="card"><h2>Upload an image or video</h2>${c.mediaRepo?`<p class="small mute">Files go to the <b>public</b> repository ${esc(c.mediaRepo)} (folder ${esc(c.mediaPath)}), because Instagram, Threads and Facebook download media from a public address. Anything uploaded there is public. Instagram needs JPEG.</p><input type="file" id="file" accept="image/jpeg,image/png,video/mp4"><div class="row" style="margin-top:8px"><button class="b" data-act="upload">Upload</button></div><div id="uploaded"></div>`:`<p class="mute">Set a public media repository in Setup to upload from here. You can also paste any public https link in the editor.</p>`}</div>`;
+/* ----- compose ----- */
+function blank(date){ const tz = wsTz(); return { id:"", title:"", primary:"", hashtags:[], intent:"scheduled", targets: wsAccounts().map(a=>({account:a.id})), versions:{}, media:[], scheduled:{ local: date ? date+"T09:00" : nextHourLocal(tz), tz } }; }
+V.compose = () => {
+  if(!hasWs()) return noWorkspace();
+  const p = editing || (editing = blank()), accs = wsAccounts(), existing = !!D.posts[p.id];
+  const tz = zones(); if(p.scheduled && p.scheduled.tz && !tz.includes(p.scheduled.tz)) tz.unshift(p.scheduled.tz);
+  const chosen = (p.targets||[]).map(t=>t.account), c = cfg();
+  return `<div class="card"><h2>${existing?"Edit post":"New post"} <span class="mute small">· ${esc(curWs().name)}</span></h2>
+  ${accs.length?"":`<div class="notice warn">No accounts are connected in this workspace yet. <button class="b alt" data-go="accounts" type="button">Connect one</button></div>`}
+  <form id="form" novalidate>
+  <label for="f_primary">Caption</label><textarea id="f_primary" data-f="primary" style="min-height:130px">${esc(p.primary)}</textarea>
+  <label for="f_hashtags">Hashtags (optional, separated by spaces)</label><input id="f_hashtags" data-f="hashtags" value="${esc((p.hashtags||[]).join(" "))}">
+  <label>Photos or video</label><div id="mediaList"></div>
+  <div class="row"><label class="b alt" style="display:inline-block;margin:0;font-weight:500">Upload files<input type="file" id="file" accept="image/*,video/mp4,video/quicktime" multiple style="display:none"></label><button type="button" class="b alt" data-act="addmedia">Paste a link instead</button><span class="small mute" id="upState"></span></div>
+  <p class="small mute" style="margin:6px 0 0">Photos are converted to JPEG automatically (Instagram needs it). Files are stored in the public repository <b>${esc(c.mediaRepo || (c.owner+"/post-queue-dashboard"))}</b>, so anyone with the link can see them.</p>
+  <label>Post to</label>${accs.length?accs.map(a=>`<label class="chk"><input type="checkbox" data-acc="${esc(a.id)}" ${chosen.includes(a.id)?"checked":""}> <b>${esc(a.id)}</b> <span class="mute small">${esc((RULES[a.platform]||{}).label||a.platform)}</span></label>`).join(""):`<div class="mute small">Nothing to choose yet.</div>`}
+  <div id="counts" class="small" style="margin-top:6px"></div>
+  <details style="margin-top:8px"><summary class="small">Use different text for one platform</summary><div id="versions"></div></details>
+  <label>When</label><div class="cols"><div><label for="f_local" class="sub">Date and time</label><input id="f_local" type="datetime-local" value="${esc((p.scheduled||{}).local||"")}"></div>
+  <div><label for="f_tz" class="sub">Time zone</label><select id="f_tz">${tz.map(z=>`<option ${z===(p.scheduled||{}).tz?"selected":""}>${esc(z)}</option>`).join("")}</select></div></div>
+  <div id="problems"></div>
+  <div class="row" style="margin-top:12px"><button type="submit" class="b" data-intent="scheduled">Add to calendar</button><button type="button" class="b alt" data-act="savedraft">Save as draft</button><button type="button" class="b alt" data-act="postnow">Post now</button>${existing&&statusOf(p.id)==="draft"?btn("delete",p.id,"Delete","danger"):""}</div>
+  </form></div>`;
 };
+function readForm(){
+  const p = editing, f = k => { const el = $(`[data-f="${k}"]`); return el ? el.value : p[k]; };
+  p.primary = f("primary");
+  p.hashtags = f("hashtags").split(/[\s,]+/).map(s=>s.replace(/^#/,"")).filter(Boolean);
+  p.targets = [...document.querySelectorAll("[data-acc]")].filter(x=>x.checked).map(x=>({account:x.dataset.acc}));
+  const l = $("#f_local"), z = $("#f_tz"); p.scheduled = { local: l ? l.value : "", tz: z ? z.value : browserTz() };
+  p.versions = p.versions || {};
+  document.querySelectorAll("[data-ver]").forEach(el => { const k = el.dataset.ver; if(el.value.trim()) p.versions[k] = { ...(p.versions[k]||{}), text: el.value }; else if(p.versions[k]){ delete p.versions[k].text; if(!Object.keys(p.versions[k]).length) delete p.versions[k]; } });
+  document.querySelectorAll("[data-mrow]").forEach(row => { const i = +row.dataset.mrow; if(p.media[i]) p.media[i] = { type: p.media[i].type, url: row.querySelector("[data-mu]").value.trim(), alt: row.querySelector("[data-ma]").value }; });
+}
+function renderMedia(){
+  const ml = $("#mediaList"); if(!ml || !editing) return;
+  ml.innerHTML = editing.media.map((m,i)=>`<div class="card mrow" data-mrow="${i}"><div class="thumb">${m.url&&/^https:/.test(m.url)?(m.type==="video"?`<video src="${esc(m.url)}" preload="metadata" muted></video>`:`<img src="${esc(m.url)}" alt="">`):""}</div><div style="flex:1;min-width:0"><input data-mu value="${esc(m.url)}" aria-label="Link"><input data-ma value="${esc(m.alt||"")}" placeholder="Describe it (optional)" aria-label="Description" style="margin-top:6px"></div><button type="button" class="b alt" data-act="rmmedia" data-i="${i}">Remove</button></div>`).join("");
+}
+function refreshCompose(){
+  if(route!=="compose" || !editing) return; readForm();
+  const p = editing, accs = D.accounts||{};
+  const plats = [...new Set(p.targets.map(t=>(accs[t.account]||{}).platform).filter(x=>RULES[x]&&RULES[x].status==="implemented"))];
+  $("#counts").innerHTML = p.targets.map(t => { const a = accs[t.account]; if(!a||!RULES[a.platform]) return ""; const r = RULES[a.platform], n = len(derivedText(p, a.platform)[1]); return `<span class="cnt ${n>r.max_chars?"over":""}" style="margin-right:12px">${esc(r.label)} ${n}/${r.max_chars}</span>`; }).join("");
+  const vh = $("#versions"); const sig = plats.join(",") + "|" + JSON.stringify(p.versions||{});
+  if(vh.dataset.sig !== sig){ vh.innerHTML = plats.map(pl => `<label>${esc(RULES[pl].label)}</label><textarea data-ver="${pl}">${esc(((p.versions||{})[pl]||{}).text||"")}</textarea>`).join("") || `<p class="small mute">Pick an account first.</p>`; vh.dataset.sig = sig; }
+  const errs = validatePost({...p, id: p.id || "draft-check"}, accs, p.intent==="scheduled");
+  const sched = validatePost({...p, id: p.id || "draft-check"}, accs, true);
+  $("#problems").innerHTML = sched.length ? `<div class="notice warn" style="margin-top:10px"><b>Before this can go on the calendar:</b><ul style="margin:4px 0 0 18px;padding:0">${sched.map(e=>`<li>${esc(e)}</li>`).join("")}</ul></div>` : `<div class="notice ok" style="margin-top:10px">Ready to add to the calendar.</div>`;
+}
+async function uploadFiles(files){
+  const c = cfg(); const mr = c.mediaRepo || `${c.owner}/post-queue-dashboard`; const [mo, mrn] = mr.split("/");
+  if(!mo || !mrn) return say("err", "Set the media repository in Setup.");
+  for(const f of files){
+    if(f.size > 25*1024*1024){ say("err", `${f.name} is over 25 MB.`); continue; }
+    const isVid = /^video\//.test(f.type); if(!isVid && !/^image\//.test(f.type)){ say("err", `${f.name}: only photos and MP4 videos.`); continue; }
+    $("#upState").textContent = `Uploading ${f.name}…`; uploading++;
+    try {
+      let blob = f, name = f.name.toLowerCase().replace(/\.[a-z0-9]+$/,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "file", ext = isVid ? (/quicktime/.test(f.type)?"mov":"mp4") : "jpg";
+      if(!isVid){ blob = await toJpeg(f); }
+      const buf = new Uint8Array(await blob.arrayBuffer()); let s=""; for(let i=0;i<buf.length;i+=0x8000) s += String.fromCharCode.apply(null, buf.subarray(i,i+0x8000));
+      const path = `media/${curWs().id}/${Date.now().toString(36)}-${name}.${ext}`;
+      await gh("PUT", `/repos/${encodeURIComponent(mo)}/${encodeURIComponent(mrn)}/contents/${path}`, { message: "media: upload "+name, content: btoa(s) });
+      readForm(); editing.media.push({ type: isVid?"video":"image", url: `https://raw.githubusercontent.com/${mo}/${mrn}/HEAD/${path}`, alt:"" });
+      renderMedia(); refreshCompose();
+    } catch(e){ say("err", `${f.name}: ${e.message} (Does the token have Contents write on ${mr}, and is that repository public?)`); }
+    uploading--; $("#upState").textContent = uploading ? "" : "";
+  }
+}
+async function toJpeg(file){
+  const bmp = await createImageBitmap(file), sc = Math.min(1, 2048/Math.max(bmp.width,bmp.height));
+  const c = document.createElement("canvas"); c.width = Math.max(1,Math.round(bmp.width*sc)); c.height = Math.max(1,Math.round(bmp.height*sc));
+  const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0,0,c.width,c.height); g.drawImage(bmp,0,0,c.width,c.height);
+  return new Promise((res,rej) => c.toBlob(b => b ? res(b) : rej(new Error("could not convert the image")), "image/jpeg", 0.9));
+}
+async function saveEditing(intent, opts={}){
+  readForm(); const p = editing;
+  if(uploading) return say("warn","Wait for the upload to finish.");
+  if(!p.primary.trim() && !p.media.length) return say("err","Write a caption or add media first.");
+  if(!p.id){ p.id = newId(p.primary || "post"); }
+  p.title = (p.title && D.posts[p.id]) ? p.title : (p.primary.trim().split("\n")[0].slice(0,50) || "Post with media");
+  p.intent = intent;
+  if(intent==="scheduled"){ if(opts.now) p.scheduled = { local: localFromMs(Date.now(), p.scheduled.tz), tz: p.scheduled.tz };
+    const errs = validatePost(p, D.accounts||{}, true); if(errs.length){ say("err","Fix the problems listed below the form first."); refreshCompose(); return false; } }
+  else { const out = {...p}; if(!(out.scheduled||{}).local) delete out.scheduled; }
+  const st = D.states[p.id]; if(st && Object.values(st.targets||{}).some(t=>t.status==="published")) say("warn","This post was already published to at least one account. Editing it will not post it again.");
+  try { const out = {...p}; if(intent!=="scheduled" && !(out.scheduled||{}).local) delete out.scheduled; await savePost(out); await load(); return true; }
+  catch(e){ say("err", e.message); return false; }
+}
 
+/* ----- accounts ----- */
 const PLATFORM_ORDER = ["instagram","facebook_page","threads","bluesky","mastodon","x","linkedin","linkedin_page","tiktok","youtube"];
 const PLATFORM_SETUP = {
   instagram: { fields:[["ig_user_id","Instagram user id (numbers only)","17841400000000000"]], secrets:[["access_token","IG_TOKEN","Access token"]],
-    steps:["Switch the Instagram account to a Professional account (Business or Creator) and link it to a Facebook Page.","Create an app at developers.facebook.com and add the Instagram API product.","Give the app the permissions instagram_basic, instagram_content_publish and pages_read_engagement, then generate a long-lived access token.","Find the numeric Instagram user id (in Graph API Explorer: me/accounts, then instagram_business_account).","Every Instagram post needs media: one JPEG image at a public https address, or one video (published as a Reel)."], url:"https://developers.facebook.com/docs/instagram-platform/" },
+    steps:["Switch the Instagram account to a Professional account (Business or Creator) and link it to a Facebook Page.","Create an app at developers.facebook.com and add the Instagram API product.","Give the app the permissions instagram_basic, instagram_content_publish and pages_read_engagement, then generate a long-lived access token.","Find the numeric Instagram user id (in Graph API Explorer: me/accounts, then instagram_business_account).","Every Instagram post needs a photo or video: photos are sent as JPEG, videos as Reels."], url:"https://developers.facebook.com/docs/instagram-platform/" },
   facebook_page: { fields:[["page_id","Facebook Page id (numbers only)","123456789012345"]], secrets:[["page_token","FB_PAGE_TOKEN","Page access token"]],
     steps:["Create an app at developers.facebook.com.","As an admin of the Page, get a Page access token with pages_manage_posts (and publish_video for video).","Copy the numeric Page id from the Page's About section."], url:"https://developers.facebook.com/docs/pages-api/" },
   threads: { fields:[], secrets:[["access_token","THREADS_TOKEN","Long-lived access token"]],
@@ -325,36 +434,31 @@ const PLATFORM_SETUP = {
   mastodon: { fields:[["instance","Instance address","https://mastodon.social"]], secrets:[["access_token","MASTODON_TOKEN","Access token"]],
     steps:["On your instance: Preferences, Development, New application, with only the scopes write:statuses and write:media.","Copy the access token."], url:"https://docs.joinmastodon.org/api/" }
 };
-let connecting = null, justAdded = null;
 const setupMap = () => D.setup && D.setup.accounts ? Object.fromEntries(D.setup.accounts.map(x=>[x.account,x])) : {};
 const defaultSecretName = (base, id) => `${base}_${id.toUpperCase().replace(/[^A-Z0-9]+/g,"_")}`;
 V.accounts = () => {
-  const mine = wsAccounts(), setup = setupMap(), w = curWs();
+  if(!hasWs()) return noWorkspace();
+  const mine = wsAccounts(), setup = setupMap(), w = curWs(), c = cfg();
   const tiles = PLATFORM_ORDER.map(pl => {
     const r = RULES[pl]; if(!r) return "";
-    const built = r.status==="implemented", have = mine.filter(a=>a.platform===pl);
-    const ok = have.filter(a=>setup[a.id] && setup[a.id].ok).length;
+    const built = r.status==="implemented", have = mine.filter(a=>a.platform===pl), ok = have.filter(a=>setup[a.id] && setup[a.id].ok).length;
     const state = !built ? `<span class="pill">not available yet</span>` : have.length ? (ok===have.length ? `<span class="pill published">connected</span>` : `<span class="pill uncertain">needs check</span>`) : `<span class="pill draft">ready to connect</span>`;
-    return `<div class="card" style="margin:0"><div class="row split"><b>${esc(r.label)}</b>${state}</div>
-      <div class="small mute" style="margin:6px 0">${built ? (have.length ? have.map(a=>esc(a.id)).join(", ") : "Not connected") : esc(r.why||"")}</div>
-      ${built ? `<button class="b ${have.length?"alt":""}" data-act="connect" data-pl="${pl}">${have.length?"Add another":"Connect"}</button>` : ""}</div>`; }).join("");
+    return `<div class="card tile"><div class="row split"><b>${esc(r.label)}</b>${state}</div><div class="small mute" style="margin:6px 0">${built ? (have.length ? have.map(a=>esc(a.id)).join(", ") : "Not connected") : esc(r.why||"")}</div>${built ? `<button class="b ${have.length?"alt":""}" data-act="connect" data-pl="${pl}">${have.length?"Add another":"Connect"}</button>` : ""}</div>`; }).join("");
   const rows = mine.length ? `<div class="tbl"><table><thead><tr><th>Account</th><th>Platform</th><th>Last check</th><th></th></tr></thead><tbody>${mine.map(x=>{ const r = RULES[x.platform]||{}, s = setup[x.id];
     return `<tr><td>${esc(x.id)}</td><td>${esc(r.label||x.platform)}</td><td>${s?`${s.ok?"✓ "+esc(s.identity||"ok"):"✗ "+esc(s.error||"failed")} <span class="mute small">${esc(s.checked_at)}</span>`:`<span class="mute">not checked yet</span>`}</td><td><button class="b alt" data-act="rmacct" data-id="${esc(x.id)}">Remove</button></td></tr>`; }).join("")}</tbody></table></div>` : `<div class="empty">No accounts connected in ${esc(w.name)} yet.</div>`;
-  const c = cfg();
-  const added = justAdded ? `<div class="card"><h2>Next: add the secret values</h2><p>The account <b>${esc(justAdded.id)}</b> was added. Its credentials are <b>not</b> stored in the repository. Add them to the <code>SOCIAL_SECRETS</code> secret as extra entries (keep the existing ones):</p><pre>${esc(JSON.stringify(Object.fromEntries(Object.values(justAdded.secrets).map(n=>[n,"paste the value here"])), null, 2))}</pre><p class="row"><a class="b" href="https://github.com/${esc(c.owner)}/${esc(c.repo)}/settings/secrets/actions" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Open GitHub secrets</a><button class="b alt" data-act="run" data-mode="check-setup">Then check accounts (read-only)</button></p><p class="small mute">The check logs in and reads the account name. It never posts.</p></div>` : "";
-  return (w.status==="paused" ? `<div class="notice info"><b>${esc(w.name)}</b> is paused for now. You can still connect accounts, but nothing is set up here yet.</div>` : "") + added +
-    `<div class="card"><h2>Connect a platform</h2><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr))">${tiles}</div></div>` + (connecting ? connectForm() : "") +
-    `<div class="card"><h2>${esc(w.name)} accounts</h2>${rows}<p class="small mute">The repository stores only the <i>names</i> of secrets. Tokens and passwords live in the GitHub secret and are never shown here.</p><div class="row"><button class="b alt" data-act="run" data-mode="check-setup">Check accounts now (read-only)</button></div></div>`;
+  const added = justAdded ? `<div class="card"><h2>Last step: add the secret values</h2><p>The account <b>${esc(justAdded.id)}</b> was added. Its credentials are <b>not</b> stored in the repository. In GitHub, edit the <code>SOCIAL_SECRETS</code> secret and add these entries (keep the existing ones):</p><pre>${esc(JSON.stringify(Object.fromEntries(Object.values(justAdded.secrets).map(n=>[n,"paste the value here"])), null, 2))}</pre><p class="row"><a class="b" href="https://github.com/${esc(c.owner)}/${esc(c.repo)}/settings/secrets/actions" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Open GitHub secrets</a><button class="b alt" data-act="check">Then check accounts (read-only)</button></p><p class="small mute">The check logs in and reads the account name. It never posts.</p></div>` : "";
+  return added + `<div class="card"><h2>Connect a social account to ${esc(w.name)}</h2><div class="grid wide">${tiles}</div></div>` + (connecting ? connectForm() : "") +
+    `<div class="card"><h2>${esc(w.name)} accounts</h2>${rows}<p class="small mute">The repository stores only the <i>names</i> of secrets. Tokens and passwords stay in GitHub and are never shown here.</p><div class="row"><button class="b alt" data-act="check">Check accounts now (read-only)</button></div></div>`;
 };
 function connectForm(){
   const pl = connecting, r = RULES[pl], sp = PLATFORM_SETUP[pl], w = curWs();
   const baseId = `${w.id}-${pl.replace("_","-")}`.slice(0,30);
   return `<div class="card" id="connectCard"><h2>Connect ${esc(r.label)} to ${esc(w.name)}</h2>
   <ol class="small">${sp.steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol><p class="small"><a href="${esc(sp.url)}" target="_blank" rel="noopener noreferrer">Official documentation</a></p>
-  <form id="connForm" novalidate><div class="cols"><div><label for="c_id">Name for this account (letters, digits, - or _)</label><input id="c_id" value="${esc(baseId)}"></div>
+  <form id="connForm" novalidate><div class="cols"><div><label for="c_id">Name for this account</label><input id="c_id" value="${esc(baseId)}"></div>
   ${sp.fields.map(([k,l,ph])=>`<div><label for="c_${k}">${esc(l)}</label><input id="c_${k}" data-cf="${k}" placeholder="${esc(ph)}"></div>`).join("")}</div>
-  <label>Secret names (where you will store each credential in GitHub; these are names, not the values)</label>
-  <div class="cols">${sp.secrets.map(([role,nm,l])=>`<div><label for="c_s_${role}">${esc(l)}</label><input id="c_s_${role}" data-cs="${role}" data-base="${nm}" value="${esc(defaultSecretName(nm, baseId))}"></div>`).join("")}</div>
+  <details style="margin-top:8px"><summary class="small">Secret names (advanced, the defaults are fine)</summary><p class="small mute">These are names under which you will store each credential in GitHub, not the credentials themselves.</p>
+  <div class="cols">${sp.secrets.map(([role,nm,l])=>`<div><label for="c_s_${role}">${esc(l)}</label><input id="c_s_${role}" data-cs="${role}" data-base="${nm}" value="${esc(defaultSecretName(nm, baseId))}"></div>`).join("")}</div></details>
   <div id="connErr"></div><div class="row" style="margin-top:12px"><button type="submit" class="b">Add account</button><button type="button" class="b alt" data-act="connectcancel">Cancel</button></div></form></div>`;
 }
 async function addAccount(){
@@ -368,217 +472,110 @@ async function addAccount(){
   acc.secrets = {};
   for(const [role] of sp.secrets){ const v = $(`[data-cs="${role}"]`).value.trim(); if(!/^[A-Z][A-Z0-9_]{2,38}$/.test(v)) return err("Secret names must be capital letters, digits and _ (for example IG_TOKEN). Never type the secret value here."); acc.secrets[role] = v; }
   try {
-    const f = await readFile("config/accounts.json"); const cfgJ = f ? JSON.parse(f.text) : {accounts:[]};
-    cfgJ.accounts = cfgJ.accounts || [];
-    if(cfgJ.accounts.some(a=>a.id===id)) return err("An account with that name already exists.");
-    cfgJ.accounts.push(acc);
-    await writeFile("config/accounts.json", JSON.stringify(cfgJ, null, 2)+"\n", `social: connect ${id}`, f && f.sha);
-    justAdded = acc; connecting = null; await load(); render(); say("ok", `Account ${id} added. Now add its secret values (below).`);
+    const f = await readFile("config/accounts.json"); const j = f ? JSON.parse(f.text) : {accounts:[]};
+    j.accounts = j.accounts || [];
+    if(j.accounts.some(a=>a.id===id)) return err("An account with that name already exists.");
+    j.accounts.push(acc);
+    await writeFile("config/accounts.json", JSON.stringify(j, null, 2)+"\n", `social: connect ${id}`, f && f.sha);
+    justAdded = acc; connecting = null; await load(); render(); say("ok", `Account ${id} added. One last step below: add its secret values in GitHub.`);
   } catch(e){ err(e.message); }
 }
 async function removeAccount(id){
   const used = Object.keys(D.posts).filter(pid => ["scheduled","publishing","uncertain"].includes(statusOf(pid)) && (D.posts[pid].post.targets||[]).some(t=>t.account===id));
-  if(used.length) return say("err", `Cannot remove ${id}: ${used.length} scheduled or in-progress post(s) still target it. Cancel or move them first.`);
-  if(!await confirmBox(`Remove the account ${id} from Content Desk? Its secrets stay in GitHub until you delete them there.`)) return;
+  if(used.length) return say("err", `Cannot remove ${id}: ${used.length} scheduled or in-progress post(s) still use it. Cancel or move them first.`);
+  if(!await confirmBox(`Remove the account ${id}? Its secrets stay in GitHub until you delete them there.`)) return;
   try { const f = await readFile("config/accounts.json"); const j = JSON.parse(f.text); j.accounts = j.accounts.filter(a=>a.id!==id);
     await writeFile("config/accounts.json", JSON.stringify(j, null, 2)+"\n", `social: remove ${id}`, f.sha); await load(); render(); say("ok","Removed."); } catch(e){ say("err", e.message); }
 }
 
-V.logs = () => {
-  const rows = D.log.filter(r => !r.account || inWs(r.account)).slice(-200).reverse();
-  return `<div class="card"><h2>Publishing log</h2>${rows.length?`<div class="tbl"><table><thead><tr><th>Time (UTC)</th><th>Event</th><th>Post</th><th>Account</th><th>Detail</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.ts)}</td><td>${esc(r.event)}</td><td>${esc(r.post_id||"")}</td><td>${esc(r.account||"")}</td><td class="small">${esc(Object.entries(r).filter(([k])=>!["ts","event","post_id","account"].includes(k)).map(([k,v])=>`${k}=${v}`).join(" "))}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">The log is empty.</div>`}</div>
-  <div class="card"><h2>Workflow runs</h2>${D.runs&&D.runs.length?`<div class="tbl"><table><thead><tr><th>When</th><th>Trigger</th><th>Result</th><th></th></tr></thead><tbody>${D.runs.map(r=>`<tr><td>${esc(new Date(r.created_at).toLocaleString())}</td><td>${esc(r.event)}</td><td>${esc(r.conclusion||r.status)}</td><td><a href="${esc(r.html_url)}" target="_blank" rel="noopener noreferrer">open</a></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No runs found.</div>`}</div>`;
-};
-
-/* ----- compose ----- */
-function blank(){ return { id:"", title:"", campaign:"", hook:"", headline:"", description:"", primary:"", alt:"", cta:"", hashtags:[], intent:"draft", targets:[], versions:{}, media:[], scheduled:{local:"", tz:Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"} }; }
-function zones(){ try { return Intl.supportedValuesOf("timeZone"); } catch(e){ return ["UTC","Africa/Casablanca","Europe/Paris","Europe/London","America/New_York","America/Los_Angeles","Asia/Dubai","Asia/Tokyo"]; } }
-V.compose = () => {
-  const p = editing || (editing = blank()); const accs = wsAccounts();
-  const tz = zones(); if(p.scheduled && p.scheduled.tz && !tz.includes(p.scheduled.tz)) tz.unshift(p.scheduled.tz);
-  const f = (k, label, area) => `<div><label for="f_${k}">${label}</label>${area?`<textarea id="f_${k}" data-f="${k}">${esc(p[k])}</textarea>`:`<input id="f_${k}" data-f="${k}" value="${esc(p[k])}">`}</div>`;
-  const chosen = (p.targets||[]).map(t=>t.account);
-  return `<div class="card"><h2>${D.posts[p.id]?"Edit post":"New post"}</h2><form id="form" novalidate>
-  <div class="cols">${f("title","Post title")}${f("campaign","Campaign")}</div>
-  <div class="cols">${f("hook","Main hook")}${f("headline","Headline")}</div>
-  ${f("description","Short description",1)}${f("primary","Primary caption",1)}<div class="cnt" id="cnt_primary"></div>${f("alt","Alternative (shorter) caption",1)}
-  <div class="cols">${f("cta","Call to action")}<div><label for="f_hashtags">Hashtags (space or comma separated)</label><input id="f_hashtags" data-f="hashtags" value="${esc((p.hashtags||[]).join(" "))}"></div></div>
-  <label>Post to</label>${accs.length?accs.map(a=>`<label style="font-weight:400;display:inline-flex;gap:6px;margin-right:14px"><input type="checkbox" data-acc="${esc(a.id)}" ${chosen.includes(a.id)?"checked":""}> ${esc(a.id)} <span class="mute small">${esc((RULES[a.platform]||{}).label||a.platform)}${(RULES[a.platform]||{}).status!=="implemented"?" · not built":""}</span></label>`).join(""):`<div class="mute">No accounts configured yet (see Setup).</div>`}
-  <div id="versions"></div>
-  <label>Media</label><div id="mediaList"></div><div class="row"><button type="button" class="b alt" data-act="addmedia">Add media link</button></div>
-  <div class="cols"><div><label for="f_intent">Status</label><select id="f_intent" data-f="intent"><option value="draft" ${p.intent==="draft"?"selected":""}>Draft (never published)</option><option value="scheduled" ${p.intent==="scheduled"?"selected":""}>Scheduled</option></select></div>
-  <div><label for="f_local">Date and time</label><input id="f_local" type="datetime-local" value="${esc((p.scheduled||{}).local||"")}"></div>
-  <div><label for="f_tz">Time zone</label><select id="f_tz">${tz.map(z=>`<option ${z===(p.scheduled||{}).tz?"selected":""}>${esc(z)}</option>`).join("")}</select></div></div>
-  <div id="problems"></div>
-  <div class="row" style="margin-top:12px"><button type="submit" class="b">Save</button><button type="button" class="b alt" data-act="newpost">Start a new one</button>${D.posts[p.id]?`<span class="small mute">${pill(statusOf(p.id))}</span>`:""}</div>
-  </form><p class="small mute">Saving writes the post file to GitHub. A scheduled post goes out on the first hourly run after its time. Editing a post that is already published never posts it again.</p></div>`;
-};
-function readForm(){
-  const p = editing; const g = k => { const el = $(`[data-f="${k}"]`); return el ? el.value : p[k]; };
-  ["title","campaign","hook","headline","description","primary","alt","cta"].forEach(k => p[k] = g(k));
-  p.hashtags = g("hashtags").split(/[\s,]+/).map(s=>s.replace(/^#/,"")).filter(Boolean);
-  p.intent = g("intent");
-  p.targets = [...document.querySelectorAll("[data-acc]")].filter(x=>x.checked).map(x=>({account:x.dataset.acc}));
-  p.scheduled = { local: $("#f_local").value, tz: $("#f_tz").value };
-  p.versions = p.versions || {};
-  document.querySelectorAll("[data-ver]").forEach(el => { const k = el.dataset.ver; if(el.value.trim()) p.versions[k] = { ...(p.versions[k]||{}), text: el.value }; else if(p.versions[k]) { delete p.versions[k].text; if(!Object.keys(p.versions[k]).length) delete p.versions[k]; } });
-  document.querySelectorAll("[data-mrow]").forEach(row => { const i = +row.dataset.mrow; p.media[i] = { type: row.querySelector("[data-mt]").value, url: row.querySelector("[data-mu]").value.trim(), alt: row.querySelector("[data-ma]").value }; });
-}
-function slugify(t){ const s = String(t).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,60).replace(/-+$/,""); return (s.length>=3 ? s : "post-"+Date.now().toString(36)) ; }
-function refreshCompose(){
-  if(route!=="compose" || !editing) return; readForm();
-  const p = editing, accs = D.accounts||{};
-  const plats = [...new Set(p.targets.map(t=>(accs[t.account]||{}).platform).filter(x=>RULES[x]&&RULES[x].status==="implemented"))];
-  const pc = $("#cnt_primary"); if(pc) pc.textContent = `${len(p.primary)} characters`;
-  $("#versions").innerHTML = plats.length ? `<label>Per-platform text <span class="mute" style="font-weight:400">(leave blank to use the main caption, fitted to each limit)</span></label>` + plats.map(pl => {
-    const r = RULES[pl], v = ((p.versions||{})[pl]||{}).text || "", [, auto] = derivedText({...p, versions: {...p.versions, [pl]: {...(p.versions||{})[pl], text: ""}}}, pl), eff = derivedText(p, pl)[1], n = len(eff);
-    return `<div class="card" style="margin:6px 0"><div class="row split"><b>${esc(r.label)}</b><span class="cnt ${n>r.max_chars?"over":""}">${n} / ${r.max_chars}</span></div><textarea data-ver="${pl}" placeholder="${esc(auto.slice(0,200))}">${esc(v)}</textarea>${p.media.length?`<div class="small mute">${p.media.length} media item(s) attached</div>`:""}</div>`; }).join("") : "";
-  const ml = $("#mediaList"); const rows = p.media.map((m,i)=>`<div class="card" data-mrow="${i}" style="margin:6px 0"><div class="cols"><div><label>Type</label><select data-mt><option ${m.type==="image"?"selected":""}>image</option><option ${m.type==="video"?"selected":""}>video</option></select></div><div><label>Public https link</label><input data-mu value="${esc(m.url)}"></div><div><label>Description (alt text)</label><input data-ma value="${esc(m.alt||"")}"></div></div><div class="row" style="margin-top:6px">${m.url&&/^https:/.test(m.url)?(m.type==="video"?`<video src="${esc(m.url)}" style="height:70px" preload="metadata" muted></video>`:`<img src="${esc(m.url)}" alt="" style="height:70px;border-radius:6px">`):""}<button type="button" class="b alt" data-act="rmmedia" data-i="${i}">Remove</button></div></div>`).join("");
-  if(ml.dataset.sig !== rows){ ml.innerHTML = rows; ml.dataset.sig = rows; }
-  const errs = validatePost({...p, id: p.id || slugify(p.title||"x")}, accs, p.intent==="scheduled");
-  $("#problems").innerHTML = errs.length ? `<div class="notice ${p.intent==="scheduled"?"err":"warn"}" style="margin-top:10px"><b>${p.intent==="scheduled"?"Fix before scheduling:":"Notes (a draft can still be saved):"}</b><ul style="margin:4px 0 0 18px;padding:0">${errs.map(e=>`<li>${esc(e)}</li>`).join("")}</ul></div>` : `<div class="notice ok" style="margin-top:10px">Looks valid.</div>`;
+/* ----- workspaces ----- */
+V.newws = () => `<div class="card"><h2>New workspace</h2><p class="small mute">One workspace per brand or project. Its accounts, posts and calendar stay separate from the others.</p><form id="wsForm" novalidate>
+  <label for="w_name">Name</label><input id="w_name" placeholder="Instagramaps">
+  <label for="w_site">Website (optional)</label><input id="w_site" placeholder="https://example.com">
+  <label for="w_tz">Time zone for scheduling</label><select id="w_tz">${zones().map(z=>`<option ${z===browserTz()?"selected":""}>${esc(z)}</option>`).join("")}</select>
+  <div id="wsErr"></div><div class="row" style="margin-top:12px"><button type="submit" class="b">Create workspace</button>${hasWs()?`<button type="button" class="b alt" data-go="calendar">Cancel</button>`:""}</div></form></div>`;
+async function createWorkspace(){
+  const name = $("#w_name").value.trim(), err = m => { $("#wsErr").innerHTML = `<div class="notice err">${esc(m)}</div>`; };
+  if(name.length < 2) return err("Give the workspace a name.");
+  const site = $("#w_site").value.trim(); if(site && !/^https?:\/\/\S+$/.test(site)) return err("The website must start with https://");
+  try {
+    const f = await readFile("config/workspaces.json"); const j = f ? JSON.parse(f.text) : {workspaces:[]}; j.workspaces = j.workspaces || [];
+    let id = slugify(name).replace(/^post$/,"workspace"), n = 1, base = id; while(j.workspaces.some(w=>w.id===id)){ n++; id = `${base}-${n}`; }
+    j.workspaces.push({ id, name, website: site, status:"active", tz: $("#w_tz").value });
+    await writeFile("config/workspaces.json", JSON.stringify(j, null, 2)+"\n", `social: create workspace ${id}`, f && f.sha);
+    store.set("pq.ws", id); editing = null; await load(); go("calendar"); say("ok", `Workspace “${name}” created. Connect an account next.`);
+  } catch(e){ err(e.message); }
 }
 
-/* ----- AI import ----- */
-function buildPrompt(request, count){
-  const accs = wsAccounts().filter(a=>RULES[a.platform]&&RULES[a.platform].status==="implemented");
-  const w = curWs(); const brand = { ...(D.brand||{}), ...(w.brand||{}), ...(w.id==="all" ? {} : { name: w.name }), website: w.website || (D.brand||{}).website };
-  return `You are writing social media posts for a brand. Return ONLY JSON, nothing else.
-
-Brand: ${brand.name||""}
-Website: ${brand.website||""}
-Voice: ${brand.voice||"clear, friendly, no hype"}
-Audience: ${brand.audience||""}
-Facts you may use (use nothing else; do not invent features, prices, numbers or testimonials):
-${(brand.facts||[]).map(f=>"- "+f).join("\n")||"- (none given)"}
-Never say: ${(brand.avoid||[]).join(", ")||"(nothing listed)"}
-
-Task: ${request||"(describe what the posts are about)"}
-Write ${count} post(s).
-
-Accounts you can target (use these ids in "targets"):
-${accs.map(a=>`- ${a.id} (${a.platform})`).join("\n")}
-
-Platform limits (the version for each platform must fit):
-${[...new Set(accs.map(a=>a.platform))].map(p=>`- ${RULES[p].label} (${p}): at most ${RULES[p].max_chars} characters`).join("\n")}
-
-Output shape (a JSON list). Fields marked optional can be left out:
-[{
-  "title": "short internal name",
-  "campaign": "optional",
-  "primary": "the main caption",
-  "alt": "optional shorter caption",
-  "cta": "optional call to action",
-  "hashtags": ["optional"],
-  "targets": [{"account": "<an account id from above>"}],
-  "versions": {"<platform id>": {"text": "optional hand-written version"}},
-  "media": [{"type": "image", "url": "https://public-address", "alt": "describe the image"}]
-}]
-Do not include dates: scheduling is done in the dashboard. Do not include an "id".
-`;
-}
-V.ai = () => `<div class="card"><h2>1 · Build the prompt</h2><p class="small mute">No paid AI service is used. Copy this into the assistant you already use (Claude, ChatGPT…), then paste its answer below.</p>
-  <label for="aiReq">What should the posts be about?</label><textarea id="aiReq" placeholder="Announce the new merge tool, friendly tone"></textarea>
-  <label for="aiN">How many posts?</label><input id="aiN" type="number" min="1" max="20" value="3" style="max-width:100px">
-  <div class="row" style="margin-top:8px"><button class="b" data-act="mkprompt">Build prompt</button><button class="b alt" data-act="copyprompt">Copy</button></div><pre id="promptOut" class="small" style="display:none"></pre></div>
-  <div class="card"><h2>2 · Import the answer as drafts</h2><textarea id="aiIn" style="min-height:160px" placeholder='Paste the JSON here'></textarea><div class="row" style="margin-top:8px"><button class="b" data-act="import">Import as drafts</button></div><div id="importOut"></div><p class="small mute">Imports are always saved as drafts. Nothing is scheduled or published until you open each one and schedule it.</p></div>`;
-async function doImport(){
-  const out = $("#importOut"); let t = $("#aiIn").value.trim().replace(/^```(?:json)?\s*|\s*```$/gi,"");
-  let data; try { const i = Math.min(...["[","{"].map(c=>{const k=t.indexOf(c);return k<0?1e9:k;})); if(i===1e9) throw new Error("No JSON found."); data = JSON.parse(t.slice(i)); } catch(e){ out.innerHTML = `<div class="notice err">${esc(e.message)}</div>`; return; }
-  if(data && !Array.isArray(data)) data = data.posts || [data];
-  const lines = []; let saved = 0;
-  for(const raw of data){
-    const p = Object.fromEntries(Object.entries(raw).filter(([k])=>TOP_KEYS.includes(k))); p.intent = "draft"; delete p.scheduled;
-    p.id = (p.id && /^[a-z0-9][a-z0-9-]{2,79}$/.test(p.id)) ? p.id : slugify(p.title||"post");
-    let base = p.id, n = 1; while(D.posts[p.id]){ n++; p.id = `${base}-${n}`; }
-    const errs = validatePost(p, D.accounts||{}, false);
-    if(errs.length){ lines.push(`<div class="notice err"><b>${esc(p.title||p.id)}</b> was not imported: ${esc(errs.join(" "))}</div>`); continue; }
-    try { await savePost(p); D.posts[p.id] = { post: p, sha: "" }; saved++; lines.push(`<div class="notice ok">Saved draft <b>${esc(p.id)}</b>.</div>`); } catch(e){ lines.push(`<div class="notice err">${esc(p.id)}: ${esc(e.message)}</div>`); }
-  }
-  out.innerHTML = lines.join(""); if(saved) await load();
-}
-
-V.setup = () => { const c = cfg(); return `<div class="card"><h2>Connect</h2><p class="small mute">These stay in this browser. The token is never sent anywhere except api.github.com.</p>
-  <div class="cols"><div><label for="s_owner">Repository owner</label><input id="s_owner" value="${esc(c.owner)}"></div><div><label for="s_repo">Repository (the post-queue repository)</label><input id="s_repo" value="${esc(c.repo)}"></div><div><label for="s_branch">Branch</label><input id="s_branch" value="${esc(c.branch)}"></div><div><label for="s_path">Folder (leave empty)</label><input id="s_path" value="${esc(c.path)}"></div></div>
+V.setup = () => { const c = cfg(); return `<div class="card"><h2>Connect to GitHub</h2><p class="small mute">These stay in this browser. The token is only ever sent to api.github.com.</p>
+  <div class="cols"><div><label for="s_owner">Repository owner</label><input id="s_owner" value="${esc(c.owner)}"></div><div><label for="s_repo">Queue repository</label><input id="s_repo" value="${esc(c.repo)}"></div><div><label for="s_branch">Branch</label><input id="s_branch" value="${esc(c.branch)}"></div></div>
   <label for="s_token">Fine-grained personal access token</label><input id="s_token" type="password" autocomplete="off" placeholder="${c.token?"saved in this browser":"github_pat_…"}">
-  <details><summary class="small">Optional: public repository for media uploads</summary><div class="cols"><div><label for="s_mr">Public media repository (owner/name)</label><input id="s_mr" value="${esc(c.mediaRepo)}" placeholder="you/your-media-repo"></div><div><label for="s_mp">Folder</label><input id="s_mp" value="${esc(c.mediaPath)}"></div></div></details>
+  <label for="s_mr">Public repository for uploaded photos and videos (owner/name)</label><input id="s_mr" value="${esc(c.mediaRepo)}" placeholder="${esc((c.owner||"you")+"/post-queue-dashboard")}">
+  <input type="hidden" id="s_path" value="${esc(c.path)}"><input type="hidden" id="s_mp" value="${esc(c.mediaPath)}">
   <div class="row" style="margin-top:12px"><button class="b" data-act="savecfg">Save and load</button><button class="b alt" data-act="forget">Forget this browser's settings</button></div></div>
-  <div class="card"><h2>Token permissions</h2><ul><li>Repository access: only the one repository above (and the media repository if you use uploads).</li><li><b>Contents: Read and write</b> (posts, commands, uploads).</li><li><b>Actions: Read and write</b> (start runs, list runs).</li><li>Nothing else. Set an expiry (30 to 90 days) and renew it. To revoke: GitHub → Settings → Developer settings → Fine-grained tokens → Delete.</li></ul>
-  <p class="small mute">Anyone with this token can write to the repository, so treat it like a password and do not use a shared computer.</p></div>
-  <div class="card"><h2>Honest limits</h2><ul class="small"><li>Posts go out when the hourly GitHub Actions run picks them up. Runs can start late.</li><li>This page cannot publish by itself. It writes files and starts the workflow; the workflow talks to the platforms.</li><li>Built: Bluesky, Mastodon, Threads, Facebook Page, Instagram. Not built: X, LinkedIn, TikTok, YouTube (see the notes beside each account).</li><li>Setup steps for each platform are in <code>docs/SETUP.md</code> and <code>PLATFORMS.md</code>.</li></ul></div>`; };
+  <div class="card"><h2>Token permissions</h2><ul><li>Repository access: the queue repository <b>and</b> the public media repository.</li><li><b>Contents: Read and write</b>.</li><li><b>Actions: Read and write</b>.</li><li>Nothing else. Give it an expiry (30 to 90 days) and renew it. To revoke: GitHub, Settings, Developer settings, Fine-grained tokens, Delete.</li></ul>
+  <p class="small mute">Anyone with this token can write to those repositories, so treat it like a password and don't use a shared computer.</p></div>
+  <div class="card"><h2>How it works</h2><ul class="small"><li>You add posts to the calendar here. They are saved as files in your queue repository.</li><li>Every hour GitHub runs the publisher, which posts what is due to each connected account and records the result. Runs can start late.</li><li>Built: Bluesky, Mastodon, Threads, Facebook Page, Instagram. Not built: X, LinkedIn, TikTok, YouTube.</li><li>A post is shown as published only after the platform confirmed it.</li></ul></div>`; };
 
 /* ---------- wiring ---------- */
-function wsSelect(){ const sel = $("#wsSel"); if(!D){ sel.innerHTML=""; sel.disabled = true; return; } sel.disabled = false; const cur = curWs().id; sel.innerHTML = D.workspaces.map(w=>`<option value="${esc(w.id)}" ${w.id===cur?"selected":""}>${esc(w.name)}${w.status==="paused"?" (paused)":""}</option>`).join(""); }
-function nav(){ $("#nav").innerHTML = PAGES.map(([k,l]) => `<button data-go="${k}" ${k===route?'aria-current="page"':""}>${l}</button>`).join(""); }
+const PAGES_ = PAGES;
+function nav(){ $("#nav").innerHTML = PAGES_.map(([k,l]) => `<button data-go="${k}" ${k===route?'aria-current="page"':""}>${l}</button>`).join(""); }
+function wsSelect(){ const sel = $("#wsSel"), add = $("#wsAdd"); if(!D){ sel.innerHTML=""; sel.disabled = true; add.hidden = true; return; } add.hidden = false; sel.disabled = !hasWs();
+  sel.innerHTML = hasWs() ? D.workspaces.map(w=>`<option value="${esc(w.id)}" ${w.id===curWs().id?"selected":""}>${esc(w.name)}</option>`).join("") : `<option>No workspace yet</option>`; }
 function render(){
   nav(); wsSelect(); const v = $("#view");
   if(route==="setup"){ v.innerHTML = V.setup(); return; }
-  if(!D){ v.innerHTML = needSetup(); return; }
-  const pausedNote = (D.workspaces.length>1 && curWs().status==="paused" && route!=="accounts") ? `<div class="notice info"><b>${esc(curWs().name)}</b> is paused for now${curWs().note?`: ${esc(curWs().note)}`:""}. Nothing is connected or scheduled here yet.</div>` : "";
-  v.innerHTML = pausedNote + V[route](); if(route==="compose") refreshCompose();
+  if(!D){ v.innerHTML = `<div class="card"><h2>Connect your repository</h2><p>Open <b>Setup</b> and enter the repository and a GitHub token. Nothing is loaded until then.</p></div>`; return; }
+  v.innerHTML = V[route](); if(route==="compose"){ renderMedia(); refreshCompose(); }
 }
-function go(r){ route = r; try { history.replaceState(null,"","#"+r); } catch(e){} render(); }
+function go(r){ route = r; try { history.replaceState(null,"","#"+r); } catch(e){} render(); window.scrollTo(0,0); }
 document.addEventListener("click", async ev => {
-  const g = ev.target.closest("[data-go]"); if(g){ go(g.dataset.go); return; }
+  const g = ev.target.closest("[data-go]"); if(g){ if(g.dataset.go==="compose" && route!=="compose") editing = null; go(g.dataset.go); return; }
   const b = ev.target.closest("[data-act]"); if(!b) return;
   const act = b.dataset.act, id = b.dataset.id;
-  if(act==="run"){ const mode = b.dataset.mode; if(mode==="publish-due"){ if(!await confirmBox("Publish everything that is due right now to the real accounts?")) return; } return runQueue(mode, mode==="publish-due"); }
-  if(act==="edit"){ editing = JSON.parse(JSON.stringify(D.posts[id].post)); editing.scheduled = editing.scheduled || {local:"", tz:Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"}; editing.media ||= []; editing.versions ||= {}; return go("compose"); }
-  if(act==="newpost"){ editing = blank(); return render(); }
-  if(act==="addmedia"){ readForm(); editing.media.push({type:"image",url:"",alt:""}); $("#mediaList").dataset.sig=""; return refreshCompose(); }
-  if(act==="rmmedia"){ readForm(); editing.media.splice(+b.dataset.i,1); $("#mediaList").dataset.sig=""; return refreshCompose(); }
-  if(act==="calprev"||act==="calnext"){ const n = new Date(); let y = V.calY ?? n.getFullYear(), m = V.calM ?? n.getMonth(); m += act==="calnext"?1:-1; if(m<0){m=11;y--} if(m>11){m=0;y++} V.calY=y; V.calM=m; return render(); }
-  if(act==="delete"){ if(!await confirmBox(`Delete the draft “${D.posts[id].post.title||id}”?`)) return; try { await deleteFile(`queue/posts/${id}.json`, D.posts[id].sha, `social: delete ${id}`); await load(); render(); say("ok","Deleted."); } catch(e){ say("err", e.message); } return; }
-  if(act==="cancel"){ if(!await confirmBox("Cancel this post? It will not be published.")) return; await command({action:"cancel", post_id:id}, "Cancel requested. It takes effect when the next run starts. Use “Dry run” on Overview to start one now."); return; }
-  if(act==="now"){ if(!await confirmBox("Publish this post now to the real accounts?")) return; await command({action:"publish_now", post_id:id}, "Requested."); return runQueue("publish-due", true); }
-  if(act==="retry"){ const st = D.states[id]||{}; const unc = Object.values(st.targets||{}).some(t=>t.status==="uncertain"); if(!await confirmBox("Retry the failed account(s) of this post?"+(unc?" Some accounts are marked uncertain: only continue if you checked that nothing was posted.":""))) return; await command({action:"retry", post_id:id}, "Retry requested."); return runQueue("publish-due", true); }
-  if(act==="resolve"){ const st = D.states[id]||{}; const acc = Object.entries(st.targets||{}).filter(([,t])=>t.status==="uncertain").map(([a])=>a); if(!acc.length) return say("info","No uncertain accounts on this post.");
-    const url = prompt_(`Check ${acc[0]} on the platform. If the post IS there, paste its link to mark it published. If it is NOT there, leave empty to allow a retry.`); if(url===null) return;
-    if(url) await command({action:"mark_published", post_id:id, account:acc[0], url}, "Marked as published."); else await command({action:"retry", post_id:id, account:acc[0], confirm_not_posted:true}, "Retry requested. Run the queue to send it."); return; }
+  if(act==="newws"){ route = "newws"; return render(); }
+  if(act==="newon"){ editing = blank(b.dataset.date); return go("compose"); }
+  if(act==="edit"){ editing = JSON.parse(JSON.stringify(D.posts[id].post)); editing.scheduled = editing.scheduled || {local: nextHourLocal(wsTz()), tz: wsTz()}; editing.media ||= []; editing.versions ||= {}; editing.targets ||= []; return go("compose"); }
+  if(act==="filter"){ filter = b.dataset.k; return render(); }
+  if(act==="publishdue"){ if(!await confirmBox("Publish everything that is due right now to the real accounts?")) return; return runQueue("publish-due", true); }
+  if(act==="check") return runQueue("check-setup", false);
+  if(act==="calprev"||act==="calnext"){ const n = new Date(); let y = calY ?? n.getFullYear(), m = calM ?? n.getMonth(); m += act==="calnext"?1:-1; if(m<0){m=11;y--} if(m>11){m=0;y++} calY=y; calM=m; return render(); }
+  if(act==="addmedia"){ readForm(); editing.media.push({type:"image",url:"",alt:""}); renderMedia(); return refreshCompose(); }
+  if(act==="rmmedia"){ readForm(); editing.media.splice(+b.dataset.i,1); renderMedia(); return refreshCompose(); }
+  if(act==="savedraft"){ if(await saveEditing("draft")){ say("ok","Draft saved."); go("posts"); } return; }
+  if(act==="postnow"){ readForm(); if(!await confirmBox("Publish this post now to the selected accounts?")) return; const ok = await saveEditing("scheduled", {now:true}); if(!ok) return; const pid = editing.id; if(await command({action:"publish_now", post_id:pid}) && await runQueue("publish-due", true)){ say("ok","Saved and started. It is being published; press Reload in about a minute to see the result."); } go("posts"); return; }
+  if(act==="delete"){ if(!await confirmBox(`Delete the draft “${D.posts[id].post.title||id}”?`)) return; try { await deleteFile(`queue/posts/${id}.json`, D.posts[id].sha, `social: delete ${id}`); editing = null; await load(); go("posts"); say("ok","Deleted."); } catch(e){ say("err", e.message); } return; }
+  if(act==="cancel"){ if(!await confirmBox("Cancel this post? It will not be published.")) return; await command({action:"cancel", post_id:id}, "Cancel requested. It takes effect when the next run starts."); return; }
+  if(act==="now"){ if(!await confirmBox("Publish this post now to the real accounts?")) return; if(await command({action:"publish_now", post_id:id}) && await runQueue("publish-due", true)) say("ok","Started. Press Reload in about a minute."); return; }
+  if(act==="retry"){ const st = D.states[id]||{}; const unc = Object.values(st.targets||{}).some(t=>t.status==="uncertain"); if(!await confirmBox("Retry the failed account(s) of this post?"+(unc?" Some accounts are marked “check needed”: only continue if you checked that nothing was posted.":""))) return; if(await command({action:"retry", post_id:id}) && await runQueue("publish-due", true)) say("ok","Retry started."); return; }
+  if(act==="resolve"){ const st = D.states[id]||{}; const acc = Object.entries(st.targets||{}).filter(([,t])=>t.status==="uncertain").map(([a])=>a); if(!acc.length) return say("info","Nothing to check on this post.");
+    const url = window.__promptAnswer !== undefined ? window.__promptAnswer : window.prompt(`Look at ${acc[0]} on the platform. If the post IS there, paste its link to mark it published. If it is NOT there, leave this empty to allow a retry.`); if(url===null) return;
+    if(url) await command({action:"mark_published", post_id:id, account:acc[0], url}, "Marked as published."); else await command({action:"retry", post_id:id, account:acc[0], confirm_not_posted:true}, "Retry allowed. Press “Publish due posts now” to send it."); return; }
   if(act==="connect"){ connecting = b.dataset.pl; justAdded = null; render(); const c = $("#connectCard"); if(c) c.scrollIntoView({behavior:"smooth", block:"start"}); return; }
   if(act==="connectcancel"){ connecting = null; return render(); }
   if(act==="rmacct") return removeAccount(id);
-  if(act==="mkprompt"){ const o = $("#promptOut"); o.textContent = buildPrompt($("#aiReq").value, +$("#aiN").value||3); o.style.display="block"; return; }
-  if(act==="copyprompt"){ const o = $("#promptOut"); if(o.style.display==="none") $('[data-act="mkprompt"]').click(); try { await navigator.clipboard.writeText(o.textContent); say("ok","Copied."); } catch(e){ const r = document.createRange(); r.selectNodeContents(o); getSelection().removeAllRanges(); getSelection().addRange(r); say("info","Select and copy the text."); } return; }
-  if(act==="import") return doImport();
-  if(act==="upload") return upload();
-  if(act==="savecfg"){ ["owner","repo","branch","path"].forEach(k => store.set("pq."+k, $("#s_"+k).value.trim())); if($("#s_token").value.trim()) store.set("pq.token", $("#s_token").value.trim()); store.set("pq.mediaRepo",$("#s_mr").value.trim()); store.set("pq.mediaPath",$("#s_mp").value.trim()); await load(); return go(D?"overview":"setup"); }
-  if(act==="forget"){ ["owner","repo","branch","path","token","mediaRepo","mediaPath"].forEach(k=>store.del("pq."+k)); D=null; say("ok","Forgotten."); return render(); }
+  if(act==="savecfg"){ ["owner","repo","branch","path"].forEach(k => store.set("pq."+k, $("#s_"+k) ? $("#s_"+k).value.trim() : "")); if($("#s_token").value.trim()) store.set("pq.token", $("#s_token").value.trim()); store.set("pq.mediaRepo",$("#s_mr").value.trim()); store.set("pq.mediaPath",$("#s_mp").value.trim()); await load(); return go("calendar"); }
+  if(act==="forget"){ ["owner","repo","branch","path","token","mediaRepo","mediaPath","ws"].forEach(k=>store.del("pq."+k)); D=null; say("ok","Forgotten."); return render(); }
 });
-const prompt_ = text => { const r = window.__promptAnswer; return r !== undefined ? r : window.prompt(text); };
 document.addEventListener("input", ev => { if(ev.target.id==="c_id"){ document.querySelectorAll("[data-cs]").forEach(el => { el.value = defaultSecretName(el.dataset.base, ev.target.value.trim() || "x"); }); }
-   if(route==="compose" && ev.target.closest("#form")) refreshCompose(); });
-document.addEventListener("change", ev => { if(route==="compose" && ev.target.closest("#form")) refreshCompose(); });
+  if(route==="compose" && ev.target.closest("#form") && ev.target.id!=="file") refreshCompose(); });
+document.addEventListener("change", ev => {
+  if(ev.target.id==="file"){ const fl = [...ev.target.files]; ev.target.value = ""; uploadFiles(fl); return; }
+  if(route==="compose" && ev.target.closest("#form")) refreshCompose(); });
 document.addEventListener("submit", async ev => {
   if(ev.target.id==="connForm"){ ev.preventDefault(); return addAccount(); }
-  if(ev.target.id!=="form") return;     // the confirm dialog's own form must submit normally
+  if(ev.target.id==="wsForm"){ ev.preventDefault(); return createWorkspace(); }
+  if(ev.target.id!=="form") return;
   ev.preventDefault();
-  readForm(); const p = editing;
-  if(!p.id){ const base = slugify(p.title || p.primary.slice(0,40)); p.id = base; let n = 1; while(D.posts[p.id]){ n++; p.id = `${base}-${n}`; } }
-  const errs = validatePost(p, D.accounts||{}, p.intent==="scheduled");
-  if(p.intent==="scheduled" && errs.length){ say("err","Fix the problems listed below the form before scheduling."); return; }
-  if(!p.title.trim() && !p.primary.trim()){ say("err","Add a title or a caption."); return; }
-  const existing = D.posts[p.id]; const st = D.states[p.id];
-  if(existing && st && Object.values(st.targets||{}).some(t=>t.status==="published")) say("warn","This post was already published to at least one account. Editing it will not post it again.");
-  try { const out = {...p}; if(out.intent!=="scheduled" && !(out.scheduled||{}).local) delete out.scheduled; await savePost(out); await load(); editing = JSON.parse(JSON.stringify(D.posts[p.id].post)); editing.media ||= []; editing.versions ||= {}; editing.scheduled ||= {local:"",tz:"UTC"}; render(); say("ok", p.intent==="scheduled" ? "Saved and scheduled. It goes out on the first run after its time." : "Draft saved."); }
-  catch(e){ say("err", e.message); }
+  if(await saveEditing("scheduled")){ say("ok","Added to the calendar. It goes out on the first run after its time."); editing = null; go("calendar"); }
 });
-async function upload(){
-  const c = cfg(), f = $("#file").files[0]; if(!f) return say("err","Choose a file.");
-  if(f.size > 20*1024*1024) return say("err","Files over 20 MB are not supported here.");
-  const [mo, mr] = c.mediaRepo.split("/"); if(!mo||!mr) return say("err","Set the media repository as owner/name in Setup.");
-  const safe = f.name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-"); const path = `${c.mediaPath}/${Date.now().toString(36)}-${safe}`;
-  const buf = new Uint8Array(await f.arrayBuffer()); let s=""; for(let i=0;i<buf.length;i+=0x8000) s += String.fromCharCode.apply(null, buf.subarray(i,i+0x8000));
-  try { await gh("PUT", `/repos/${mo}/${mr}/contents/${path}`, { message: "media: upload "+safe, content: btoa(s) });
-    const url = `https://raw.githubusercontent.com/${mo}/${mr}/HEAD/${path}`; $("#uploaded").innerHTML = `<div class="notice ok">Uploaded. Public link: <code>${esc(url)}</code></div>`; }
-  catch(e){ say("err", e.message + " (Does the token have Contents write on the media repository, and is it public?)"); }
-}
 $("#wsSel").addEventListener("change", e => { store.set("pq.ws", e.target.value); editing = null; connecting = null; justAdded = null; render(); });
+$("#wsAdd").addEventListener("click", () => { route = "newws"; render(); });
 $("#reload").addEventListener("click", async () => { await load(); render(); });
 (async function init(){
   const h = location.hash.slice(1); if(PAGES.some(p=>p[0]===h)) route = h;
   const c = cfg(); if(!c.token || !c.owner || !c.repo) route = "setup";
-  await load(); render();
+  await load(); if(D && !hasWs()) route = "newws"; render();
 })();
 </script>
 </body>

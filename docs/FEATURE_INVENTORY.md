@@ -10,7 +10,7 @@
 | Platforms: LinkedIn, LinkedIn page, X, Instagram, TikTok, YouTube, Facebook Page, Threads, Bluesky, Mastodon, Discord (Reddit, Telegram, Pinterest pending) | Bluesky, Mastodon, Threads, Facebook Page, Instagram. The rest not built |
 | Per-platform text limits and media rules | Yes (rules.py, mirrored in the dashboard) |
 | Analytics (metrics, history, followers) | Publication history only |
-| Brand memory | `config/brand.json` used in the AI prompt |
+| Brand memory | No (AI content generation was removed for now) |
 | AI media generation, video editing, carousels, thumbnails, voiceover, subtitles, demo recording | No |
 | Agent team: jobs, standing agents | No (you generate text in your own assistant and import it) |
 | Inbox / comments, Meta ads boost, profile audit, references, trends | No |
