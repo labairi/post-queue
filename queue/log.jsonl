@@ -33,3 +33,4 @@
 {"account": "instagramaps-threads", "adopted": false, "event": "published", "post_id": "pmvlcfgukzwc", "provider_post_id": "18089347925694059", "ts": "2026-10-23T19:10:43Z", "url": "https://www.threads.com/@instamaps_app/post/De2RvzUH3hs"}
 {"account": "instgramamps", "attempt": 1, "attempt_id": "1c9fb37abf9b", "event": "attempt", "post_id": "pmvlcfgukzwc", "ts": "2026-10-23T19:10:44Z"}
 {"account": "instgramamps", "adopted": false, "event": "published", "post_id": "pmvlcfgukzwc", "provider_post_id": "at://did:plc:3qlbljjqloi4pjkvebqnpdmf/app.bsky.feed.post/3mykuyhfc7l2o", "ts": "2026-10-23T19:10:47Z", "url": "https://bsky.app/profile/[redacted]/post/3mykuyhfc7l2o"}
+{"commands": 0, "event": "run_summary", "failed": 1, "healed": 0, "invalid": 0, "published": 3, "retry_waiting": 0, "skipped": 0, "ts": "2026-10-23T19:10:48Z", "uncertain": 0, "would_publish": 0}
