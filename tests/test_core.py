@@ -172,3 +172,8 @@ def test_parse_ai_output_errors():
         parse_ai_output("sorry, I cannot")
     with pytest.raises(json.JSONDecodeError):
         parse_ai_output("[{bad json")
+
+
+def test_accounts_with_workspace_field_validate():
+    ok = {"accounts": [{"id": "insta-ig", "platform": "instagram", "workspace": "insta", "ig_user_id": "1784", "secrets": {"access_token": "IG_TOKEN_INSTA"}}]}
+    assert validate_accounts(ok) == []

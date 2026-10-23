@@ -1,4 +1,3 @@
-
 {
   "accounts": [
     {
@@ -7,7 +6,8 @@
       "secrets": {
         "identifier": "BSKY_ID",
         "app_password": "BSKY_APP_PW"
-      }
+      },
+      "workspace": "instagramaps"
     }
   ]
 }

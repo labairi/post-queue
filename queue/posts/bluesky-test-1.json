@@ -1,8 +1,0 @@
-{
-  "id": "bluesky-test-1",
-  "title": "Bluesky connection test",
-  "primary": "Test post from my new post queue. Please ignore.",
-  "intent": "scheduled",
-  "scheduled": {"local": "2026-10-23T14:25", "tz": "UTC"},
-  "targets": [{"account": "instgramamps"}]
-}

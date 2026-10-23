@@ -65,3 +65,6 @@ GitHub's scheduler runs the job hourly at minute 7 UTC and can start late, occas
 | Dashboard GitHub token | the expiry you chose | create a new one, paste it in Setup |
 
 Expired or revoked credentials show up as a **failed** post with the platform's message and are never retried automatically.
+
+## Workspaces and connecting accounts from the dashboard
+`config/workspaces.json` lists your brands (workspaces). Each account has a `workspace` field, and the dashboard's workspace selector shows only that brand's accounts and posts. A workspace with `"status": "paused"` is shown empty with a note. The **Accounts** page lists every platform: built ones have a **Connect** button that adds the account entry to `config/accounts.json` (secret names only) and tells you which keys to add to `SOCIAL_SECRETS`; the others say why they are not available yet. The dashboard never asks for or stores a token value for a platform.

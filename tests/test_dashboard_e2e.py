@@ -250,7 +250,7 @@ def test_logs_and_accounts_pages_render(page, gh):
     connect(page)
     page.click('[data-go="logs"]'); assert "rejected" in page.inner_text("#view") and "success" in page.inner_text("#view")
     page.click('[data-go="accounts"]'); t = page.inner_text("#view")
-    assert "bsky" in t and "never checked" in t and "not built" in t
+    assert "bsky" in t and "not checked yet" in t and "not available yet" in t
 
 
 def test_mobile_width_has_no_horizontal_scroll(page, gh):
@@ -259,3 +259,83 @@ def test_mobile_width_has_no_horizontal_scroll(page, gh):
     for r in ("overview", "compose", "queue", "calendar", "logs", "accounts", "media", "ai", "setup"):
         page.click(f'[data-go="{r}"]')
         assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 1"), r
+
+
+def with_workspaces(gh):
+    gh.put("config/workspaces.json", {"workspaces": [
+        {"id": "insta", "name": "Instagramaps", "status": "active", "brand": {"facts": ["Maps for Instagram"]}},
+        {"id": "pdf", "name": "PrivatePDF Editor", "status": "paused", "note": "set up later"}]})
+    gh.put("config/accounts.json", {"accounts": [{"id": "insta-bsky", "platform": "bluesky", "workspace": "insta", "secrets": {}}]})
+    gh.put("status/setup.json", {"checked_at": "2026-10-23T14:00:00Z", "accounts": [{"account": "insta-bsky", "platform": "bluesky", "ok": True, "identity": "insta.bsky.social", "checked_at": "2026-10-23T14:00:00Z"}]})
+
+
+def test_workspaces_isolate_accounts_and_paused_one_is_empty(page, gh):
+    with_workspaces(gh)
+    connect(page)
+    assert page.input_value("#wsSel") == "insta"
+    page.click('[data-go="accounts"]')
+    t = page.inner_text("#view")
+    assert "insta-bsky" in t and "insta.bsky.social" in t and "connected" in t
+    page.select_option("#wsSel", "pdf")
+    assert "paused" in page.inner_text("#view") and "insta-bsky" not in page.inner_text("#view")
+    page.click('[data-go="overview"]')
+    assert "Connect your first account" in page.inner_text("#view") and "paused" in page.inner_text("#view")
+
+
+def test_connect_instagram_writes_names_only_and_rejects_secret_values(page, gh):
+    with_workspaces(gh)
+    connect(page)
+    page.click('[data-go="accounts"]')
+    page.click('[data-act="connect"][data-pl="instagram"]')
+    assert "instagram_content_publish" in page.inner_text("#connectCard")
+    page.fill("#c_id", "insta-ig"); page.fill('[data-cf="ig_user_id"]', "17841400000000000")
+    page.fill('[data-cs="access_token"]', "EAAGm0PX4ZCpsBAKZB7sVeryLongSecretTokenValue1234567890")
+    page.click("#connForm button[type=submit]")
+    assert "Never type the secret value" in page.inner_text("#connErr")
+    assert "insta-ig" not in gh.files["config/accounts.json"][0]
+    page.fill('[data-cs="access_token"]', "IG_TOKEN_INSTA")
+    page.click("#connForm button[type=submit]")
+    page.wait_for_selector("text=Next: add the secret values")
+    acc = json.loads(gh.files["config/accounts.json"][0])["accounts"]
+    ig = [a for a in acc if a["id"] == "insta-ig"][0]
+    assert ig == {"id": "insta-ig", "platform": "instagram", "workspace": "insta", "ig_user_id": "17841400000000000", "secrets": {"access_token": "IG_TOKEN_INSTA"}}
+    assert len(acc) == 2 and "IG_TOKEN_INSTA" in page.inner_text("#view")
+
+
+def test_connect_validates_ids_and_duplicates(page, gh):
+    with_workspaces(gh)
+    connect(page)
+    page.click('[data-go="accounts"]'); page.click('[data-act="connect"][data-pl="instagram"]')
+    page.fill("#c_id", "insta-ig"); page.fill('[data-cf="ig_user_id"]', "not-a-number")
+    page.click("#connForm button[type=submit]")
+    assert "numbers only" in page.inner_text("#connErr")
+    page.click('[data-act="connect"][data-pl="bluesky"]')
+    page.fill("#c_id", "insta-bsky")
+    page.click("#connForm button[type=submit]")
+    page.wait_for_selector("#connErr .err")
+    assert "already exists" in page.inner_text("#connErr")
+
+
+def test_unbuilt_platforms_cannot_be_connected(page, gh):
+    with_workspaces(gh)
+    connect(page)
+    page.click('[data-go="accounts"]')
+    assert page.locator('[data-act="connect"][data-pl="x"]').count() == 0
+    assert "not available yet" in page.inner_text("#view")
+
+
+def test_remove_account_blocked_while_posts_are_scheduled(page, gh):
+    with_workspaces(gh)
+    gh.put("queue/posts/live-one.json", {"id": "live-one", "title": "L", "primary": "x", "intent": "scheduled", "scheduled": {"local": "2030-01-01T10:00", "tz": "UTC"}, "targets": [{"account": "insta-bsky"}]})
+    connect(page)
+    page.click('[data-go="accounts"]'); page.click('[data-act="rmacct"]')
+    page.wait_for_selector("#msg .err")
+    assert "Cannot remove" in page.inner_text("#msg") and "insta-bsky" in gh.files["config/accounts.json"][0]
+
+
+def test_prompt_uses_workspace_brand(page, gh):
+    with_workspaces(gh)
+    connect(page)
+    page.click('[data-go="ai"]'); page.click('[data-act="mkprompt"]')
+    p = page.inner_text("#promptOut")
+    assert "Instagramaps" in p and "Maps for Instagram" in p and "insta-bsky (bluesky)" in p

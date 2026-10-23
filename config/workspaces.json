@@ -1,0 +1,29 @@
+{
+  "workspaces": [
+    {
+      "id": "instagramaps",
+      "name": "Instagramaps",
+      "website": "https://instagramaps.com",
+      "status": "active",
+      "brand": {
+        "voice": "clear, friendly, no hype",
+        "audience": "",
+        "facts": [],
+        "avoid": []
+      }
+    },
+    {
+      "id": "privatepdf",
+      "name": "PrivatePDF Editor",
+      "website": "https://private-pdf-editor.com",
+      "status": "paused",
+      "note": "set up later",
+      "brand": {
+        "voice": "clear, friendly, no hype",
+        "audience": "",
+        "facts": [],
+        "avoid": []
+      }
+    }
+  ]
+}

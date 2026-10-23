@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Post Queue</title>
+<title>Content Desk</title>
 <style>
 :root{--bg:#f6f4ef;--panel:#fffdf8;--ink:#1d2320;--mute:#5d6862;--line:#ddd8cc;--accent:#14604a;--accent-ink:#fff;--warn:#8a5a00;--warn-bg:#fff1cf;--bad:#9c2a1f;--bad-bg:#fde4df;--good:#14604a;--good-bg:#dff1e8;--info-bg:#e6edf5;--info:#274a72;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
 @media (prefers-color-scheme:dark){:root{--bg:#141815;--panel:#1c211d;--ink:#e8ece7;--mute:#9aa59e;--line:#2f3832;--accent:#5fc19c;--accent-ink:#0c1a14;--warn:#f0c26a;--warn-bg:#3a2f12;--bad:#ff9a8c;--bad-bg:#3d1c18;--good:#7fd8b2;--good-bg:#173528;--info-bg:#1a2938;--info:#9cc2ee}}
@@ -67,8 +67,8 @@ dialog{border:1px solid var(--line);border-radius:10px;background:var(--panel);c
 <body>
 <div class="wrap">
 <header>
-  <h1>Post Queue <span class="mute small" id="repoLabel"></span></h1>
-  <div class="row"><span class="small mute" id="loaded"></span><button class="b alt" id="reload">Reload</button></div>
+  <h1>Content Desk <span class="mute small" id="repoLabel"></span></h1>
+  <div class="row"><label class="small mute" for="wsSel" style="margin:0">Workspace</label><select id="wsSel" style="width:auto;min-width:150px" aria-label="Workspace"></select><span class="small mute" id="loaded"></span><button class="b alt" id="reload">Reload</button></div>
 </header>
 <nav id="nav" aria-label="Sections"></nav>
 <div id="msg" role="status" aria-live="polite"></div>
@@ -226,6 +226,8 @@ async function load(){
     const lg = await readFile("queue/log.jsonl");
     out.log = lg ? lg.text.split("\n").filter(Boolean).map(l=>{ try { return JSON.parse(l); } catch(e){ return null; } }).filter(Boolean) : [];
     out.setup = await readJson("status/setup.json", null);
+    const wf = await readJson("config/workspaces.json", null);
+    out.workspaces = wf && !wf.__broken && Array.isArray(wf.workspaces) && wf.workspaces.length ? wf.workspaces : [{id:"all", name:"All accounts", status:"active"}];
     const br = await readJson("config/brand.json", {}); out.brand = br && !br.__broken ? br : {};
     try { out.runs = (await gh("GET", `${repoUrl()}/actions/workflows/${WORKFLOW}/runs?per_page=15`)).workflow_runs; } catch(e){ out.errors.push("Workflow runs: " + e.message); }
     out.at = new Date();
@@ -235,7 +237,12 @@ async function load(){
   } catch(e){ D = null; say("err", e.message); }
 }
 const statusOf = id => { const p = D.posts[id]; return p ? displayStatus(p.post, D.states[id]) : "draft"; };
-const ids = pred => Object.keys(D.posts).filter(id => pred(statusOf(id), id)).sort((a,b) => (D.posts[b].post.updated_at||"").localeCompare(D.posts[a].post.updated_at||""));
+const curWs = () => { const l = D.workspaces, w = store.get("pq.ws"); return (l.find(x=>x.id===w) || l.find(x=>x.status!=="paused") || l[0]); };
+const wsOf = acc => (D.accounts[acc]||{}).workspace || D.workspaces[0].id;
+const inWs = acc => wsOf(acc) === curWs().id;
+const visible = id => { const t = (D.posts[id].post.targets||[]); return !t.length || t.some(x => inWs(x.account)); };
+const wsAccounts = () => Object.values(D.accounts||{}).filter(a => inWs(a.id));
+const ids = pred => Object.keys(D.posts).filter(id => visible(id) && pred(statusOf(id), id)).sort((a,b) => (D.posts[b].post.updated_at||"").localeCompare(D.posts[a].post.updated_at||""));
 
 /* ---------- actions ---------- */
 function confirmBox(text){ return new Promise(res => { const d = $("#dlg"); $("#dlgText").textContent = text; d.addEventListener("close", () => res(d.returnValue==="ok"), {once:true}); d.returnValue = ""; if(d.showModal) d.showModal(); else res(true); }); }
@@ -272,8 +279,9 @@ const needSetup = () => `<div class="card"><h2>Connect your repository</h2><p>Op
 V.overview = () => {
   const cnt = s => ids(x=>x===s).length;
   const lastRun = D.runs && D.runs[0];
-  const next = Object.keys(D.posts).filter(i=>statusOf(i)==="scheduled").map(i=>[i, safeUtc(D.posts[i].post)]).filter(x=>x[1]).sort((a,b)=>a[1]-b[1])[0];
-  return `<div class="grid">${["draft","scheduled","published","failed","uncertain"].map(s=>`<div class="card stat"><b>${cnt(s)}</b><span>${s}</span></div>`).join("")}</div>
+  const next = Object.keys(D.posts).filter(i=>visible(i) && statusOf(i)==="scheduled").map(i=>[i, safeUtc(D.posts[i].post)]).filter(x=>x[1]).sort((a,b)=>a[1]-b[1])[0];
+  const none = !wsAccounts().length;
+  return (none ? `<div class="card"><h2>Connect your first account</h2><p>${esc(curWs().name)} has no connected social accounts yet. Pick a platform to start; each one shows exactly what you need.</p><button class="b" data-go="accounts">Connect an account</button></div>` : "") + `<div class="grid">${["draft","scheduled","published","failed","uncertain"].map(s=>`<div class="card stat"><b>${cnt(s)}</b><span>${s}</span></div>`).join("")}</div>
   <div class="card"><h2>Next up</h2>${next?`<b>${esc(D.posts[next[0]].post.title||next[0])}</b> <span class="mute">${esc(new Date(next[1]).toLocaleString())} your time</span>`:`<span class="mute">Nothing is scheduled.</span>`}</div>
   <div class="card"><h2>Queue runs</h2>${lastRun?`<p>Last run: <b>${esc(lastRun.conclusion||lastRun.status)}</b> at ${esc(new Date(lastRun.created_at).toLocaleString())} (${esc(lastRun.event)}). <a href="${esc(lastRun.html_url)}" target="_blank" rel="noopener noreferrer">Open on GitHub</a></p>`:`<p class="mute">No runs found yet. GitHub starts the hourly run by itself once the workflow is on the main branch.</p>`}
   <p class="small mute">Posts go out on the next hourly run after their time, usually within minutes, sometimes later when GitHub is busy. This is not exact-second scheduling.</p>
@@ -290,7 +298,7 @@ V.failed = () => { const l = ids(s=>["failed","cancelled"].includes(s)); return 
 V.calendar = () => {
   const now = new Date(); const y = V.calY ?? now.getFullYear(), m = V.calM ?? now.getMonth();
   const first = new Date(y,m,1), pad = (first.getDay()+6)%7, days = new Date(y,m+1,0).getDate();
-  const by = {}; Object.keys(D.posts).forEach(id => { const p = D.posts[id].post; if(p.scheduled && p.scheduled.local){ const d = p.scheduled.local.slice(0,10); (by[d] ||= []).push(id); } });
+  const by = {}; Object.keys(D.posts).filter(visible).forEach(id => { const p = D.posts[id].post; if(p.scheduled && p.scheduled.local){ const d = p.scheduled.local.slice(0,10); (by[d] ||= []).push(id); } });
   let cells = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d=>`<div class="h">${d}</div>`).join("") + "<div style='border:0'></div>".repeat(pad);
   for(let d=1; d<=days; d++){ const key = `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
     cells += `<div><b>${d}</b>${(by[key]||[]).map(id=>`<button class="ev" data-act="edit" data-id="${esc(id)}" title="${esc(D.posts[id].post.title||id)}">${esc(D.posts[id].post.scheduled.local.slice(11))} ${esc(D.posts[id].post.title||id)}</button>`).join("")}</div>`; }
@@ -298,20 +306,86 @@ V.calendar = () => {
 };
 
 V.media = () => {
-  const items = []; Object.keys(D.posts).forEach(id => (D.posts[id].post.media||[]).forEach(m => items.push({...m, post:id})));
+  const items = []; Object.keys(D.posts).filter(visible).forEach(id => (D.posts[id].post.media||[]).forEach(m => items.push({...m, post:id})));
   const c = cfg();
   return `<div class="card"><h2>Media used by your posts</h2>${items.length?`<div class="media">${items.map(m=>`<figure>${m.type==="video"?`<video src="${esc(m.url)}" preload="metadata" muted></video>`:`<img src="${esc(m.url)}" alt="${esc(m.alt||"")}" loading="lazy">`}<figcaption>${esc(m.post)}<br>${esc(m.url.split("/").pop())}</figcaption></figure>`).join("")}</div>`:`<div class="empty">No media yet.</div>`}</div>
   <div class="card"><h2>Upload an image or video</h2>${c.mediaRepo?`<p class="small mute">Files go to the <b>public</b> repository ${esc(c.mediaRepo)} (folder ${esc(c.mediaPath)}), because Instagram, Threads and Facebook download media from a public address. Anything uploaded there is public. Instagram needs JPEG.</p><input type="file" id="file" accept="image/jpeg,image/png,video/mp4"><div class="row" style="margin-top:8px"><button class="b" data-act="upload">Upload</button></div><div id="uploaded"></div>`:`<p class="mute">Set a public media repository in Setup to upload from here. You can also paste any public https link in the editor.</p>`}</div>`;
 };
 
-V.accounts = () => {
-  const a = Object.values(D.accounts||{}); const setup = D.setup && D.setup.accounts ? Object.fromEntries(D.setup.accounts.map(x=>[x.account,x])) : {};
-  return `<div class="card"><h2>Accounts</h2>${a.length?`<div class="tbl"><table><thead><tr><th>Account</th><th>Platform</th><th>Publishing</th><th>Last setup check</th></tr></thead><tbody>${a.map(x=>{ const r = RULES[x.platform]||{}; const s = setup[x.id]; return `<tr><td>${esc(x.id)}</td><td>${esc(r.label||x.platform)}</td><td>${r.status==="implemented"?"built":"<span class='mute'>not built</span>"}</td><td>${s?`${s.ok?"✓ "+esc(s.identity||"ok"):"✗ "+esc(s.error||"failed")} <span class="mute small">${esc(s.checked_at)}</span>`:`<span class="mute">never checked</span>`}</td></tr>`; }).join("")}</tbody></table></div>`:`<div class="empty">No accounts yet. Add them in <code>config/accounts.json</code> (see the Setup page). Tokens are never stored there.</div>`}
-  <p class="small mute">Accounts hold only the <i>names</i> of secrets. The tokens live in the repository's GitHub secret.</p><div class="row"><button class="b alt" data-act="run" data-mode="check-setup">Check accounts now (read-only)</button></div></div>`;
+const PLATFORM_ORDER = ["instagram","facebook_page","threads","bluesky","mastodon","x","linkedin","linkedin_page","tiktok","youtube"];
+const PLATFORM_SETUP = {
+  instagram: { fields:[["ig_user_id","Instagram user id (numbers only)","17841400000000000"]], secrets:[["access_token","IG_TOKEN","Access token"]],
+    steps:["Switch the Instagram account to a Professional account (Business or Creator) and link it to a Facebook Page.","Create an app at developers.facebook.com and add the Instagram API product.","Give the app the permissions instagram_basic, instagram_content_publish and pages_read_engagement, then generate a long-lived access token.","Find the numeric Instagram user id (in Graph API Explorer: me/accounts, then instagram_business_account).","Every Instagram post needs media: one JPEG image at a public https address, or one video (published as a Reel)."], url:"https://developers.facebook.com/docs/instagram-platform/" },
+  facebook_page: { fields:[["page_id","Facebook Page id (numbers only)","123456789012345"]], secrets:[["page_token","FB_PAGE_TOKEN","Page access token"]],
+    steps:["Create an app at developers.facebook.com.","As an admin of the Page, get a Page access token with pages_manage_posts (and publish_video for video).","Copy the numeric Page id from the Page's About section."], url:"https://developers.facebook.com/docs/pages-api/" },
+  threads: { fields:[], secrets:[["access_token","THREADS_TOKEN","Long-lived access token"]],
+    steps:["Create a Meta app with the Threads use case and add your own account as a Threads tester.","Generate a long-lived token with threads_basic and threads_content_publish. It lasts about 60 days and is not renewed automatically."], url:"https://developers.facebook.com/docs/threads/" },
+  bluesky: { fields:[], secrets:[["identifier","BSKY_ID","Handle, e.g. you.bsky.social"],["app_password","BSKY_APP_PW","App password"]],
+    steps:["In Bluesky: Settings, Privacy and security, App passwords, create one. Never use your main password."], url:"https://docs.bsky.app/" },
+  mastodon: { fields:[["instance","Instance address","https://mastodon.social"]], secrets:[["access_token","MASTODON_TOKEN","Access token"]],
+    steps:["On your instance: Preferences, Development, New application, with only the scopes write:statuses and write:media.","Copy the access token."], url:"https://docs.joinmastodon.org/api/" }
 };
+let connecting = null, justAdded = null;
+const setupMap = () => D.setup && D.setup.accounts ? Object.fromEntries(D.setup.accounts.map(x=>[x.account,x])) : {};
+const defaultSecretName = (base, id) => `${base}_${id.toUpperCase().replace(/[^A-Z0-9]+/g,"_")}`;
+V.accounts = () => {
+  const mine = wsAccounts(), setup = setupMap(), w = curWs();
+  const tiles = PLATFORM_ORDER.map(pl => {
+    const r = RULES[pl]; if(!r) return "";
+    const built = r.status==="implemented", have = mine.filter(a=>a.platform===pl);
+    const ok = have.filter(a=>setup[a.id] && setup[a.id].ok).length;
+    const state = !built ? `<span class="pill">not available yet</span>` : have.length ? (ok===have.length ? `<span class="pill published">connected</span>` : `<span class="pill uncertain">needs check</span>`) : `<span class="pill draft">ready to connect</span>`;
+    return `<div class="card" style="margin:0"><div class="row split"><b>${esc(r.label)}</b>${state}</div>
+      <div class="small mute" style="margin:6px 0">${built ? (have.length ? have.map(a=>esc(a.id)).join(", ") : "Not connected") : esc(r.why||"")}</div>
+      ${built ? `<button class="b ${have.length?"alt":""}" data-act="connect" data-pl="${pl}">${have.length?"Add another":"Connect"}</button>` : ""}</div>`; }).join("");
+  const rows = mine.length ? `<div class="tbl"><table><thead><tr><th>Account</th><th>Platform</th><th>Last check</th><th></th></tr></thead><tbody>${mine.map(x=>{ const r = RULES[x.platform]||{}, s = setup[x.id];
+    return `<tr><td>${esc(x.id)}</td><td>${esc(r.label||x.platform)}</td><td>${s?`${s.ok?"✓ "+esc(s.identity||"ok"):"✗ "+esc(s.error||"failed")} <span class="mute small">${esc(s.checked_at)}</span>`:`<span class="mute">not checked yet</span>`}</td><td><button class="b alt" data-act="rmacct" data-id="${esc(x.id)}">Remove</button></td></tr>`; }).join("")}</tbody></table></div>` : `<div class="empty">No accounts connected in ${esc(w.name)} yet.</div>`;
+  const c = cfg();
+  const added = justAdded ? `<div class="card"><h2>Next: add the secret values</h2><p>The account <b>${esc(justAdded.id)}</b> was added. Its credentials are <b>not</b> stored in the repository. Add them to the <code>SOCIAL_SECRETS</code> secret as extra entries (keep the existing ones):</p><pre>${esc(JSON.stringify(Object.fromEntries(Object.values(justAdded.secrets).map(n=>[n,"paste the value here"])), null, 2))}</pre><p class="row"><a class="b" href="https://github.com/${esc(c.owner)}/${esc(c.repo)}/settings/secrets/actions" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Open GitHub secrets</a><button class="b alt" data-act="run" data-mode="check-setup">Then check accounts (read-only)</button></p><p class="small mute">The check logs in and reads the account name. It never posts.</p></div>` : "";
+  return (w.status==="paused" ? `<div class="notice info"><b>${esc(w.name)}</b> is paused for now. You can still connect accounts, but nothing is set up here yet.</div>` : "") + added +
+    `<div class="card"><h2>Connect a platform</h2><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr))">${tiles}</div></div>` + (connecting ? connectForm() : "") +
+    `<div class="card"><h2>${esc(w.name)} accounts</h2>${rows}<p class="small mute">The repository stores only the <i>names</i> of secrets. Tokens and passwords live in the GitHub secret and are never shown here.</p><div class="row"><button class="b alt" data-act="run" data-mode="check-setup">Check accounts now (read-only)</button></div></div>`;
+};
+function connectForm(){
+  const pl = connecting, r = RULES[pl], sp = PLATFORM_SETUP[pl], w = curWs();
+  const baseId = `${w.id}-${pl.replace("_","-")}`.slice(0,30);
+  return `<div class="card" id="connectCard"><h2>Connect ${esc(r.label)} to ${esc(w.name)}</h2>
+  <ol class="small">${sp.steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol><p class="small"><a href="${esc(sp.url)}" target="_blank" rel="noopener noreferrer">Official documentation</a></p>
+  <form id="connForm" novalidate><div class="cols"><div><label for="c_id">Name for this account (letters, digits, - or _)</label><input id="c_id" value="${esc(baseId)}"></div>
+  ${sp.fields.map(([k,l,ph])=>`<div><label for="c_${k}">${esc(l)}</label><input id="c_${k}" data-cf="${k}" placeholder="${esc(ph)}"></div>`).join("")}</div>
+  <label>Secret names (where you will store each credential in GitHub; these are names, not the values)</label>
+  <div class="cols">${sp.secrets.map(([role,nm,l])=>`<div><label for="c_s_${role}">${esc(l)}</label><input id="c_s_${role}" data-cs="${role}" data-base="${nm}" value="${esc(defaultSecretName(nm, baseId))}"></div>`).join("")}</div>
+  <div id="connErr"></div><div class="row" style="margin-top:12px"><button type="submit" class="b">Add account</button><button type="button" class="b alt" data-act="connectcancel">Cancel</button></div></form></div>`;
+}
+async function addAccount(){
+  const pl = connecting, sp = PLATFORM_SETUP[pl], err = m => { $("#connErr").innerHTML = `<div class="notice err">${esc(m)}</div>`; };
+  const id = $("#c_id").value.trim(); const acc = { id, platform: pl, workspace: curWs().id };
+  if(!/^[a-z0-9][a-z0-9_-]{1,39}$/.test(id)) return err("The name must be 2 to 40 characters: lowercase letters, digits, - or _.");
+  for(const [k,l] of sp.fields){ const v = $(`[data-cf="${k}"]`).value.trim();
+    if((k==="ig_user_id"||k==="page_id") && !/^\d+$/.test(v)) return err(`${l} must be numbers only.`);
+    if(k==="instance" && !/^https:\/\/[a-z0-9.-]+$/i.test(v)) return err("The instance address must look like https://mastodon.social");
+    acc[k] = v; }
+  acc.secrets = {};
+  for(const [role] of sp.secrets){ const v = $(`[data-cs="${role}"]`).value.trim(); if(!/^[A-Z][A-Z0-9_]{2,38}$/.test(v)) return err("Secret names must be capital letters, digits and _ (for example IG_TOKEN). Never type the secret value here."); acc.secrets[role] = v; }
+  try {
+    const f = await readFile("config/accounts.json"); const cfgJ = f ? JSON.parse(f.text) : {accounts:[]};
+    cfgJ.accounts = cfgJ.accounts || [];
+    if(cfgJ.accounts.some(a=>a.id===id)) return err("An account with that name already exists.");
+    cfgJ.accounts.push(acc);
+    await writeFile("config/accounts.json", JSON.stringify(cfgJ, null, 2)+"\n", `social: connect ${id}`, f && f.sha);
+    justAdded = acc; connecting = null; await load(); render(); say("ok", `Account ${id} added. Now add its secret values (below).`);
+  } catch(e){ err(e.message); }
+}
+async function removeAccount(id){
+  const used = Object.keys(D.posts).filter(pid => ["scheduled","publishing","uncertain"].includes(statusOf(pid)) && (D.posts[pid].post.targets||[]).some(t=>t.account===id));
+  if(used.length) return say("err", `Cannot remove ${id}: ${used.length} scheduled or in-progress post(s) still target it. Cancel or move them first.`);
+  if(!await confirmBox(`Remove the account ${id} from Content Desk? Its secrets stay in GitHub until you delete them there.`)) return;
+  try { const f = await readFile("config/accounts.json"); const j = JSON.parse(f.text); j.accounts = j.accounts.filter(a=>a.id!==id);
+    await writeFile("config/accounts.json", JSON.stringify(j, null, 2)+"\n", `social: remove ${id}`, f.sha); await load(); render(); say("ok","Removed."); } catch(e){ say("err", e.message); }
+}
 
 V.logs = () => {
-  const rows = D.log.slice(-200).reverse();
+  const rows = D.log.filter(r => !r.account || inWs(r.account)).slice(-200).reverse();
   return `<div class="card"><h2>Publishing log</h2>${rows.length?`<div class="tbl"><table><thead><tr><th>Time (UTC)</th><th>Event</th><th>Post</th><th>Account</th><th>Detail</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.ts)}</td><td>${esc(r.event)}</td><td>${esc(r.post_id||"")}</td><td>${esc(r.account||"")}</td><td class="small">${esc(Object.entries(r).filter(([k])=>!["ts","event","post_id","account"].includes(k)).map(([k,v])=>`${k}=${v}`).join(" "))}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">The log is empty.</div>`}</div>
   <div class="card"><h2>Workflow runs</h2>${D.runs&&D.runs.length?`<div class="tbl"><table><thead><tr><th>When</th><th>Trigger</th><th>Result</th><th></th></tr></thead><tbody>${D.runs.map(r=>`<tr><td>${esc(new Date(r.created_at).toLocaleString())}</td><td>${esc(r.event)}</td><td>${esc(r.conclusion||r.status)}</td><td><a href="${esc(r.html_url)}" target="_blank" rel="noopener noreferrer">open</a></td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No runs found.</div>`}</div>`;
 };
@@ -320,7 +394,7 @@ V.logs = () => {
 function blank(){ return { id:"", title:"", campaign:"", hook:"", headline:"", description:"", primary:"", alt:"", cta:"", hashtags:[], intent:"draft", targets:[], versions:{}, media:[], scheduled:{local:"", tz:Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"} }; }
 function zones(){ try { return Intl.supportedValuesOf("timeZone"); } catch(e){ return ["UTC","Africa/Casablanca","Europe/Paris","Europe/London","America/New_York","America/Los_Angeles","Asia/Dubai","Asia/Tokyo"]; } }
 V.compose = () => {
-  const p = editing || (editing = blank()); const accs = Object.values(D.accounts||{});
+  const p = editing || (editing = blank()); const accs = wsAccounts();
   const tz = zones(); if(p.scheduled && p.scheduled.tz && !tz.includes(p.scheduled.tz)) tz.unshift(p.scheduled.tz);
   const f = (k, label, area) => `<div><label for="f_${k}">${label}</label>${area?`<textarea id="f_${k}" data-f="${k}">${esc(p[k])}</textarea>`:`<input id="f_${k}" data-f="${k}" value="${esc(p[k])}">`}</div>`;
   const chosen = (p.targets||[]).map(t=>t.account);
@@ -367,8 +441,8 @@ function refreshCompose(){
 
 /* ----- AI import ----- */
 function buildPrompt(request, count){
-  const accs = Object.values(D.accounts||{}).filter(a=>RULES[a.platform]&&RULES[a.platform].status==="implemented");
-  const brand = D.brand || {};
+  const accs = wsAccounts().filter(a=>RULES[a.platform]&&RULES[a.platform].status==="implemented");
+  const w = curWs(); const brand = { ...(D.brand||{}), ...(w.brand||{}), ...(w.id==="all" ? {} : { name: w.name }), website: w.website || (D.brand||{}).website };
   return `You are writing social media posts for a brand. Return ONLY JSON, nothing else.
 
 Brand: ${brand.name||""}
@@ -434,12 +508,14 @@ V.setup = () => { const c = cfg(); return `<div class="card"><h2>Connect</h2><p 
   <div class="card"><h2>Honest limits</h2><ul class="small"><li>Posts go out when the hourly GitHub Actions run picks them up. Runs can start late.</li><li>This page cannot publish by itself. It writes files and starts the workflow; the workflow talks to the platforms.</li><li>Built: Bluesky, Mastodon, Threads, Facebook Page, Instagram. Not built: X, LinkedIn, TikTok, YouTube (see the notes beside each account).</li><li>Setup steps for each platform are in <code>docs/SETUP.md</code> and <code>PLATFORMS.md</code>.</li></ul></div>`; };
 
 /* ---------- wiring ---------- */
+function wsSelect(){ const sel = $("#wsSel"); if(!D){ sel.innerHTML=""; sel.disabled = true; return; } sel.disabled = false; const cur = curWs().id; sel.innerHTML = D.workspaces.map(w=>`<option value="${esc(w.id)}" ${w.id===cur?"selected":""}>${esc(w.name)}${w.status==="paused"?" (paused)":""}</option>`).join(""); }
 function nav(){ $("#nav").innerHTML = PAGES.map(([k,l]) => `<button data-go="${k}" ${k===route?'aria-current="page"':""}>${l}</button>`).join(""); }
 function render(){
-  nav(); const v = $("#view");
+  nav(); wsSelect(); const v = $("#view");
   if(route==="setup"){ v.innerHTML = V.setup(); return; }
   if(!D){ v.innerHTML = needSetup(); return; }
-  v.innerHTML = V[route](); if(route==="compose") refreshCompose();
+  const pausedNote = (D.workspaces.length>1 && curWs().status==="paused" && route!=="accounts") ? `<div class="notice info"><b>${esc(curWs().name)}</b> is paused for now${curWs().note?`: ${esc(curWs().note)}`:""}. Nothing is connected or scheduled here yet.</div>` : "";
+  v.innerHTML = pausedNote + V[route](); if(route==="compose") refreshCompose();
 }
 function go(r){ route = r; try { history.replaceState(null,"","#"+r); } catch(e){} render(); }
 document.addEventListener("click", async ev => {
@@ -459,6 +535,9 @@ document.addEventListener("click", async ev => {
   if(act==="resolve"){ const st = D.states[id]||{}; const acc = Object.entries(st.targets||{}).filter(([,t])=>t.status==="uncertain").map(([a])=>a); if(!acc.length) return say("info","No uncertain accounts on this post.");
     const url = prompt_(`Check ${acc[0]} on the platform. If the post IS there, paste its link to mark it published. If it is NOT there, leave empty to allow a retry.`); if(url===null) return;
     if(url) await command({action:"mark_published", post_id:id, account:acc[0], url}, "Marked as published."); else await command({action:"retry", post_id:id, account:acc[0], confirm_not_posted:true}, "Retry requested. Run the queue to send it."); return; }
+  if(act==="connect"){ connecting = b.dataset.pl; justAdded = null; render(); const c = $("#connectCard"); if(c) c.scrollIntoView({behavior:"smooth", block:"start"}); return; }
+  if(act==="connectcancel"){ connecting = null; return render(); }
+  if(act==="rmacct") return removeAccount(id);
   if(act==="mkprompt"){ const o = $("#promptOut"); o.textContent = buildPrompt($("#aiReq").value, +$("#aiN").value||3); o.style.display="block"; return; }
   if(act==="copyprompt"){ const o = $("#promptOut"); if(o.style.display==="none") $('[data-act="mkprompt"]').click(); try { await navigator.clipboard.writeText(o.textContent); say("ok","Copied."); } catch(e){ const r = document.createRange(); r.selectNodeContents(o); getSelection().removeAllRanges(); getSelection().addRange(r); say("info","Select and copy the text."); } return; }
   if(act==="import") return doImport();
@@ -467,9 +546,11 @@ document.addEventListener("click", async ev => {
   if(act==="forget"){ ["owner","repo","branch","path","token","mediaRepo","mediaPath"].forEach(k=>store.del("pq."+k)); D=null; say("ok","Forgotten."); return render(); }
 });
 const prompt_ = text => { const r = window.__promptAnswer; return r !== undefined ? r : window.prompt(text); };
-document.addEventListener("input", ev => { if(route==="compose" && ev.target.closest("#form")) refreshCompose(); });
+document.addEventListener("input", ev => { if(ev.target.id==="c_id"){ document.querySelectorAll("[data-cs]").forEach(el => { el.value = defaultSecretName(el.dataset.base, ev.target.value.trim() || "x"); }); }
+   if(route==="compose" && ev.target.closest("#form")) refreshCompose(); });
 document.addEventListener("change", ev => { if(route==="compose" && ev.target.closest("#form")) refreshCompose(); });
 document.addEventListener("submit", async ev => {
+  if(ev.target.id==="connForm"){ ev.preventDefault(); return addAccount(); }
   if(ev.target.id!=="form") return;     // the confirm dialog's own form must submit normally
   ev.preventDefault();
   readForm(); const p = editing;
@@ -492,6 +573,7 @@ async function upload(){
     const url = `https://raw.githubusercontent.com/${mo}/${mr}/HEAD/${path}`; $("#uploaded").innerHTML = `<div class="notice ok">Uploaded. Public link: <code>${esc(url)}</code></div>`; }
   catch(e){ say("err", e.message + " (Does the token have Contents write on the media repository, and is it public?)"); }
 }
+$("#wsSel").addEventListener("change", e => { store.set("pq.ws", e.target.value); editing = null; connecting = null; justAdded = null; render(); });
 $("#reload").addEventListener("click", async () => { await load(); render(); });
 (async function init(){
   const h = location.hash.slice(1); if(PAGES.some(p=>p[0]===h)) route = h;
