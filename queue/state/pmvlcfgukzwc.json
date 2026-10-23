@@ -8,11 +8,11 @@
       "attempt_id": "69a44e12c6a2",
       "attempts": 1,
       "content_hash": "f6e41a7cafd06fd49787e170e6f34e8aa1912841f091d29cb78f1c249507b8bf",
-      "error_kind": "",
-      "last_error": "",
+      "error_kind": "permanent",
+      "last_error": "Facebook photo post: rejected (HTTP 403). {\"error\":{\"message\":\"(#200) The permission(s) publish_actions are not available. It has been deprecated. If you want to provide a way for your app users to share content to Facebook, we encourage you to use our Sharing products instead.\",\"type\":\"OAuthException\",\"code\":200,\"fbtrace_id\":\"A6HwG7qkmTJlLPsZX4GDVlb\"}}",
       "platform": "facebook_page",
       "started_at": "2026-10-23T19:10:09Z",
-      "status": "publishing"
+      "status": "failed"
     },
     "instagramaps-instagram": {
       "attempts": 0,
@@ -27,7 +27,7 @@
       "status": "pending"
     }
   },
-  "updated_at": "2026-10-23T19:10:09Z",
+  "updated_at": "2026-10-23T19:10:10Z",
   "validation_error": "",
   "version": 1
 }
