@@ -11,15 +11,18 @@
       "error_kind": "",
       "last_error": "",
       "platform": "instagram",
+      "provider_post_id": "18060660650583406",
+      "published_at": "2026-10-23T17:38:22Z",
       "started_at": "2026-10-23T17:38:07Z",
-      "status": "publishing"
+      "status": "published",
+      "url": "https://www.instagram.com/p/De2HK5wIMNd/"
     },
     "instgramamps": {
       "attempts": 0,
       "status": "pending"
     }
   },
-  "updated_at": "2026-10-23T17:38:07Z",
+  "updated_at": "2026-10-23T17:38:22Z",
   "validation_error": "",
   "version": 1
 }
