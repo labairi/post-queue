@@ -1,6 +1,6 @@
 {
   "cancelled": false,
-  "content_hash": "58c512ece20a4a84584a869075fc2ef1644e9eae67e414a1a8c6fda88980c0c9",
+  "content_hash": "8d298f79ba09358bee35bab7851fa62e67e215810c2ac1466ad218d7cfb5a645",
   "force_now": false,
   "id": "pmvl8yuismei",
   "targets": {
@@ -15,11 +15,17 @@
       "status": "failed"
     },
     "instgramamps": {
-      "attempts": 0,
-      "status": "pending"
+      "attempt_id": "000c3fd07570",
+      "attempts": 1,
+      "content_hash": "8d298f79ba09358bee35bab7851fa62e67e215810c2ac1466ad218d7cfb5a645",
+      "error_kind": "",
+      "last_error": "",
+      "platform": "bluesky",
+      "started_at": "2026-10-23T17:33:02Z",
+      "status": "publishing"
     }
   },
-  "updated_at": "2026-10-23T17:33:00Z",
+  "updated_at": "2026-10-23T17:33:02Z",
   "validation_error": "",
   "version": 1
 }
