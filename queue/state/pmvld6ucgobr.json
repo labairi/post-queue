@@ -8,14 +8,14 @@
       "attempt_id": "a109e8e7e0cd",
       "attempts": 1,
       "content_hash": "4856743a8ddb2cc5f4bd06eae9dbdd9f36168f13a5db0c18c465ef2138040413",
-      "error_kind": "",
-      "last_error": "",
+      "error_kind": "permanent",
+      "last_error": "Facebook post: rejected (HTTP 403). {\"error\":{\"message\":\"(#200) If posting to a group, requires app being installed in the group, and \\\\\\n          either publish_to_groups permission with user token, or both pages_read_engagement \\\\\\n          and pages_manage_posts permission with page token; If posting to a page, \\\\\\n          requires both pages_read_engagement and pages_manage_posts as an admin with \\\\\\n          sufficient adm",
       "platform": "facebook_page",
       "started_at": "2026-10-23T19:31:00Z",
-      "status": "publishing"
+      "status": "failed"
     }
   },
-  "updated_at": "2026-10-23T19:31:00Z",
+  "updated_at": "2026-10-23T19:31:02Z",
   "validation_error": "",
   "version": 1
 }
