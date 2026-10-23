@@ -1,13 +1,13 @@
 
 {
-  "_comment": "Account credentials are stored in the SOCIAL_SECRETS GitHub secret.",
+  "_comment": "Bluesky account configuration",
   "accounts": [
     {
       "id": "my-bluesky",
       "platform": "bluesky",
       "secrets": {
-        "identifier": "instgramamps",
-        "app_password": "int2-enkr-dw34-amce"
+        "identifier": "BSKY_ID",
+        "app_password": "BSKY_APP_PW"
       }
     }
   ]
