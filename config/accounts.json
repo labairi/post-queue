@@ -8,6 +8,24 @@
         "app_password": "BSKY_APP_PW"
       },
       "workspace": "instagramaps"
+    },
+    {
+      "id": "instagramaps-threads",
+      "platform": "threads",
+      "workspace": "instagramaps",
+      "secrets": {
+        "access_token": "THREADS_TOKEN"
+      },
+      "threads_user_id": "2039539270082702"
+    },
+    {
+      "id": "instagramaps-instagram",
+      "platform": "instagram",
+      "workspace": "instagramaps",
+      "secrets": {
+        "access_token": "IG_TOKEN"
+      },
+      "ig_user_id": "28643680745273208"
     }
   ]
 }
