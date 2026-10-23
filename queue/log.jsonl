@@ -4,3 +4,4 @@
 {"commands": 0, "event": "run_summary", "failed": 0, "healed": 0, "invalid": 0, "published": 0, "retry_waiting": 0, "skipped": 0, "ts": "2026-10-23T11:30:56Z", "uncertain": 0, "would_publish": 0}
 {"account": "instgramamps", "attempt": 1, "attempt_id": "ffa00830b5f2", "event": "attempt", "post_id": "bluesky-test-1", "ts": "2026-10-23T14:30:28Z"}
 {"account": "instgramamps", "adopted": false, "event": "published", "post_id": "bluesky-test-1", "provider_post_id": "at://did:plc:3qlbljjqloi4pjkvebqnpdmf/app.bsky.feed.post/3mykfdceutf24", "ts": "2026-10-23T14:30:31Z", "url": "https://bsky.app/profile/[redacted]/post/3mykfdceutf24"}
+{"commands": 0, "event": "run_summary", "failed": 0, "healed": 0, "invalid": 0, "published": 1, "retry_waiting": 0, "skipped": 0, "ts": "2026-10-23T14:30:32Z", "uncertain": 0, "would_publish": 0}
