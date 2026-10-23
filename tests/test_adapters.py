@@ -202,12 +202,13 @@ def test_facebook_page_id_must_be_numeric_and_permission_error_is_permanent():
 
 
 # ---------- Instagram ----------
-def ig_http():
+def ig_http(ready=True):
     h = FakeHttp()
     h.add("POST", "/555/media_publish", Resp(200, {"id": "media1"}))
     h.add("POST", "/555/media", Resp(200, {"id": "cont1"}))
     h.add("GET", "/media1", Resp(200, {"permalink": "https://instagram.com/p/abc"}))
-    h.add("GET", "/cont1", Resp(200, {"status_code": "FINISHED"}))
+    if ready:
+        h.add("GET", "/cont1", Resp(200, {"status_code": "FINISHED"}))
     return h
 
 def test_instagram_image_flow():
@@ -224,12 +225,12 @@ def test_instagram_rejects_png_and_missing_media_before_any_call():
     assert h.calls == []
 
 def test_instagram_reel_polls_status():
-    h = ig_http(); h.add("GET", "/cont1", [Resp(200, {"status_code": "IN_PROGRESS"}), Resp(200, {"status_code": "FINISHED"})])
+    h = ig_http(False); h.add("GET", "/cont1", [Resp(200, {"status_code": "IN_PROGRESS"}), Resp(200, {"status_code": "FINISHED"})])
     adapter("instagram", h, ig_user_id="555").publish(req(media=[VID]))
     assert h.to("/555/media")[0][2]["data"]["media_type"] == "REELS" and len(h.to("/cont1")) == 2
 
 def test_instagram_reel_error_status_permanent():
-    h = ig_http(); h.add("GET", "/cont1", Resp(200, {"status_code": "ERROR"}))
+    h = ig_http(False); h.add("GET", "/cont1", Resp(200, {"status_code": "ERROR"}))
     with pytest.raises(PublishError) as e:
         adapter("instagram", h, ig_user_id="555").publish(req(media=[VID]))
     assert e.value.kind == "permanent"
