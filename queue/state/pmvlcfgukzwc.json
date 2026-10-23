@@ -47,11 +47,14 @@
       "error_kind": "",
       "last_error": "",
       "platform": "bluesky",
+      "provider_post_id": "at://did:plc:3qlbljjqloi4pjkvebqnpdmf/app.bsky.feed.post/3mykuyhfc7l2o",
+      "published_at": "2026-10-23T19:10:47Z",
       "started_at": "2026-10-23T19:10:44Z",
-      "status": "publishing"
+      "status": "published",
+      "url": "https://bsky.app/profile/instagramaps.bsky.social/post/3mykuyhfc7l2o"
     }
   },
-  "updated_at": "2026-10-23T19:10:44Z",
+  "updated_at": "2026-10-23T19:10:47Z",
   "validation_error": "",
   "version": 1
 }
