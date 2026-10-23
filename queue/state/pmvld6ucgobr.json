@@ -1,0 +1,21 @@
+{
+  "cancelled": false,
+  "content_hash": "4856743a8ddb2cc5f4bd06eae9dbdd9f36168f13a5db0c18c465ef2138040413",
+  "force_now": false,
+  "id": "pmvld6ucgobr",
+  "targets": {
+    "instagramaps-facebook": {
+      "attempt_id": "a109e8e7e0cd",
+      "attempts": 1,
+      "content_hash": "4856743a8ddb2cc5f4bd06eae9dbdd9f36168f13a5db0c18c465ef2138040413",
+      "error_kind": "",
+      "last_error": "",
+      "platform": "facebook_page",
+      "started_at": "2026-10-23T19:31:00Z",
+      "status": "publishing"
+    }
+  },
+  "updated_at": "2026-10-23T19:31:00Z",
+  "validation_error": "",
+  "version": 1
+}
