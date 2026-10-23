@@ -1,0 +1,21 @@
+{
+  "cancelled": false,
+  "content_hash": "82e1d6f0d116c7191c3dc42d6efbe21cafb8221853dd2c30b8c32b36e13c4cbd",
+  "force_now": false,
+  "id": "bluesky-test-1",
+  "targets": {
+    "instgramamps": {
+      "attempt_id": "ffa00830b5f2",
+      "attempts": 1,
+      "content_hash": "82e1d6f0d116c7191c3dc42d6efbe21cafb8221853dd2c30b8c32b36e13c4cbd",
+      "error_kind": "",
+      "last_error": "",
+      "platform": "bluesky",
+      "started_at": "2026-10-23T14:30:28Z",
+      "status": "publishing"
+    }
+  },
+  "updated_at": "2026-10-23T14:30:28Z",
+  "validation_error": "",
+  "version": 1
+}
