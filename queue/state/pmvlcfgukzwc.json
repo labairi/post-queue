@@ -1,0 +1,33 @@
+{
+  "cancelled": false,
+  "content_hash": "f6e41a7cafd06fd49787e170e6f34e8aa1912841f091d29cb78f1c249507b8bf",
+  "force_now": false,
+  "id": "pmvlcfgukzwc",
+  "targets": {
+    "instagramaps-facebook": {
+      "attempt_id": "69a44e12c6a2",
+      "attempts": 1,
+      "content_hash": "f6e41a7cafd06fd49787e170e6f34e8aa1912841f091d29cb78f1c249507b8bf",
+      "error_kind": "",
+      "last_error": "",
+      "platform": "facebook_page",
+      "started_at": "2026-10-23T19:10:09Z",
+      "status": "publishing"
+    },
+    "instagramaps-instagram": {
+      "attempts": 0,
+      "status": "pending"
+    },
+    "instagramaps-threads": {
+      "attempts": 0,
+      "status": "pending"
+    },
+    "instgramamps": {
+      "attempts": 0,
+      "status": "pending"
+    }
+  },
+  "updated_at": "2026-10-23T19:10:09Z",
+  "validation_error": "",
+  "version": 1
+}
