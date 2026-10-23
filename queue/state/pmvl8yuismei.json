@@ -8,18 +8,18 @@
       "attempt_id": "975504f339a8",
       "attempts": 1,
       "content_hash": "58c512ece20a4a84584a869075fc2ef1644e9eae67e414a1a8c6fda88980c0c9",
-      "error_kind": "",
-      "last_error": "",
+      "error_kind": "permanent",
+      "last_error": "Instagram publish: rejected (HTTP 400). {\"error\":{\"message\":\"Media ID is not available\",\"type\":\"OAuthException\",\"code\":9007,\"error_subcode\":2207027,\"is_transient\":false,\"error_user_title\":\"Cannot Publish\",\"error_user_msg\":\"The media is not ready for publishing, please wait for a moment\",\"fbtrace_id\":\"AyyQXXIVsu43ct9wFjgVxIq\"}}",
       "platform": "instagram",
       "started_at": "2026-10-23T17:32:54Z",
-      "status": "publishing"
+      "status": "failed"
     },
     "instgramamps": {
       "attempts": 0,
       "status": "pending"
     }
   },
-  "updated_at": "2026-10-23T17:32:54Z",
+  "updated_at": "2026-10-23T17:33:00Z",
   "validation_error": "",
   "version": 1
 }
