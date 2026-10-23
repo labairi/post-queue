@@ -1,19 +1,20 @@
 {
-  "checked_at": "2026-10-23T17:24:50Z",
+  "checked_at": "2026-10-23T17:25:54Z",
   "accounts": [
     {
       "account": "instgramamps",
       "platform": "bluesky",
-      "checked_at": "2026-10-23T17:24:50Z",
+      "checked_at": "2026-10-23T17:25:54Z",
       "ok": true,
       "identity": "instagramaps.bsky.social"
     },
     {
       "account": "instagramaps-instagram",
       "platform": "instagram",
-      "checked_at": "2026-10-23T17:24:50Z",
-      "ok": false,
-      "error": "Instagram identity: rejected (HTTP 400). {\"error\":{\"message\":\"Unsupported get request. Object with ID '28643680745273208' does not exist, cannot be loaded due to missing permissions, or does not support this operation\",\"type\":\"IGApiException\",\"code\":100,\"error_subcode\":33,\"fbtrace_id\":\"AhyTpqe6Q1cmx"
+      "checked_at": "2026-10-23T17:25:54Z",
+      "ok": true,
+      "identity": "instamaps_app",
+      "id": "28036468232693053"
     }
   ]
 }
