@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-10-23T14:07:26Z",
+  "accounts": [
+    {
+      "account": "my-bluesky",
+      "platform": "bluesky",
+      "checked_at": "2026-10-23T14:07:26Z",
+      "ok": false,
+      "error": "missing secret(s): instgramamps, int2-enkr-dw34-amce"
+    }
+  ]
+}
