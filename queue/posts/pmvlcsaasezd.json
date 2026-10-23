@@ -1,0 +1,9 @@
+{
+  "id": "pmvlcsaasezd",
+  "title": "Hello how are you doing",
+  "primary": "Hello how are you doing",
+  "intent": "scheduled",
+  "scheduled": {"local": "2026-10-23T19:18", "tz": "Africa/Casablanca"},
+  "targets": [{"account": "instagramaps-facebook"}],
+  "media": []
+}
