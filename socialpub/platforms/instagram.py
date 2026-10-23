@@ -19,7 +19,9 @@ class InstagramAdapter(Adapter):
     needs = ("access_token",)
 
     def _b(self):
-        return f"https://graph.facebook.com/{self.account.get('graph_version', DEFAULT_VERSION)}"
+        # login: "instagram" = tokens from "Instagram API with Instagram login" (no Facebook Page needed)
+        host = "graph.instagram.com" if self.account.get("login") == "instagram" else "graph.facebook.com"
+        return f"https://{host}/{self.account.get('graph_version', DEFAULT_VERSION)}"
 
     def _ig(self):
         i = str(self.account.get("ig_user_id", "")).strip()

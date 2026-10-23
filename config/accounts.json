@@ -25,7 +25,8 @@
       "secrets": {
         "access_token": "IG_TOKEN"
       },
-      "ig_user_id": "28643680745273208"
+      "ig_user_id": "28643680745273208",
+      "login": "instagram"
     }
   ]
 }
