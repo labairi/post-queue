@@ -18,6 +18,14 @@
       },
       "ig_user_id": "28643680745273208",
       "login": "instagram"
+    },
+    {
+      "id": "instagramaps-threads",
+      "platform": "threads",
+      "workspace": "instagramaps",
+      "secrets": {
+        "access_token": "THREADS_TOKEN"
+      }
     }
   ]
 }
