@@ -1,6 +1,6 @@
 {
   "cancelled": false,
-  "content_hash": "561d028be7fab7fc9fe0b37881a5beaf581a1269d75582d92d63b3790c4fa334",
+  "content_hash": "f51f52e912b2138aa623b2f0c6b25bea6542097bf3aaf1219f5ac4b874a76dfc",
   "force_now": false,
   "id": "pmvlcfgukzwc",
   "targets": {
@@ -41,11 +41,17 @@
       "url": "https://www.threads.com/@instamaps_app/post/De2RvzUH3hs"
     },
     "instgramamps": {
-      "attempts": 0,
-      "status": "pending"
+      "attempt_id": "1c9fb37abf9b",
+      "attempts": 1,
+      "content_hash": "f51f52e912b2138aa623b2f0c6b25bea6542097bf3aaf1219f5ac4b874a76dfc",
+      "error_kind": "",
+      "last_error": "",
+      "platform": "bluesky",
+      "started_at": "2026-10-23T19:10:44Z",
+      "status": "publishing"
     }
   },
-  "updated_at": "2026-10-23T19:10:43Z",
+  "updated_at": "2026-10-23T19:10:44Z",
   "validation_error": "",
   "version": 1
 }

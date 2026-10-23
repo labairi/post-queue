@@ -31,3 +31,4 @@
 {"account": "instagramaps-instagram", "adopted": false, "event": "published", "post_id": "pmvlcfgukzwc", "provider_post_id": "18122295377473507", "ts": "2026-10-23T19:10:30Z", "url": "https://www.instagram.com/p/De2RtXQn14l/"}
 {"account": "instagramaps-threads", "attempt": 1, "attempt_id": "bfede459947c", "event": "attempt", "post_id": "pmvlcfgukzwc", "ts": "2026-10-23T19:10:31Z"}
 {"account": "instagramaps-threads", "adopted": false, "event": "published", "post_id": "pmvlcfgukzwc", "provider_post_id": "18089347925694059", "ts": "2026-10-23T19:10:43Z", "url": "https://www.threads.com/@instamaps_app/post/De2RvzUH3hs"}
+{"account": "instgramamps", "attempt": 1, "attempt_id": "1c9fb37abf9b", "event": "attempt", "post_id": "pmvlcfgukzwc", "ts": "2026-10-23T19:10:44Z"}
