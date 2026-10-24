@@ -55,3 +55,5 @@ Checked 2026-10-22 against the platforms' public documentation and secondary sum
 
 ## Revoking access
 Bluesky: delete the app password. Mastodon: Preferences, Development, delete the app. Meta: Business Integrations / Apps and Websites, remove the app; regenerate tokens. GitHub token: Settings, Developer settings, delete. Then update `SOCIAL_SECRETS`.
+
+- **LinkedIn (personal profile)**: built, text plus one image, via the Posts API. Needs a LinkedIn developer app with Share on LinkedIn and Sign In with LinkedIn using OpenID Connect; token (scopes openid, profile, w_member_social) lasts about 60 days, then log in again. Company Pages need Community Management API approval and are not built. Not yet tested against the live API.

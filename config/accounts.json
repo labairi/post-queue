@@ -46,6 +46,14 @@
         "page_token": "FB_PAGE_TOKEN"
       },
       "page_id": "1521470737710886"
+    },
+    {
+      "id": "instagramaps-linkedin",
+      "platform": "linkedin",
+      "workspace": "instagramaps",
+      "secrets": {
+        "access_token": "LINKEDIN_TOKEN"
+      }
     }
   ]
 }

@@ -4,13 +4,14 @@ from ..errors import PublishError
 from .bluesky import BlueskyAdapter
 from .facebook import FacebookAdapter
 from .instagram import InstagramAdapter
+from .linkedin import LinkedInAdapter
 from .mastodon import MastodonAdapter
 from .mock import MockAdapter
 from .threads import ThreadsAdapter
 from .tiktok import TikTokAdapter
 
 REGISTRY = {"bluesky": BlueskyAdapter, "mastodon": MastodonAdapter, "threads": ThreadsAdapter,
-            "facebook_page": FacebookAdapter, "instagram": InstagramAdapter, "tiktok": TikTokAdapter, "mock": MockAdapter}
+            "facebook_page": FacebookAdapter, "instagram": InstagramAdapter, "tiktok": TikTokAdapter, "linkedin": LinkedInAdapter, "mock": MockAdapter}
 
 
 def build_adapter(account: dict, secrets: dict[str, str], http, sleep=None):

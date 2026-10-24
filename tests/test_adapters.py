@@ -17,6 +17,7 @@ VID = {"type": "video", "url": "https://cdn.example/a.mp4"}
 def adapter(platform, http, secrets=None, **acc):
     names = {"bluesky": {"identifier": "ID", "app_password": "PW"}, "mastodon": {"access_token": "TOK"},
              "threads": {"access_token": "TOK"}, "facebook_page": {"page_token": "TOK"}, "instagram": {"access_token": "TOK"},
+             "linkedin": {"access_token": "TOK"},
              "tiktok": {"client_key": "K", "client_secret": "S", "refresh_token": "RT"}}[platform]
     account = {"id": "a", "platform": platform, "secrets": names, **acc}
     sec = secrets if secrets is not None else {"ID": "me.bsky.social", "PW": "pw-pw-pw", "TOK": "tok-123456"}
@@ -297,3 +298,38 @@ def test_tiktok_unaudited_error_is_permanent_and_shown():
     with pytest.raises(PublishError) as e:
         tt(h).publish(req(media=[{"type": "video", "url": "https://c.example/video.mp4"}]))
     assert e.value.kind == "permanent" and "unaudited" in str(e.value)
+
+
+# ---------- LinkedIn ----------
+class Hresp(Resp):
+    def __init__(self, status=200, body=None, headers=None, content=b""):
+        super().__init__(status, body, content); self.headers = headers or {}
+
+def li_http():
+    h = FakeHttp()
+    h.add("GET", "/v2/userinfo", Resp(200, {"sub": "abc123", "name": "Ann"}))
+    h.add("POST", "initializeUpload", Resp(200, {"value": {"uploadUrl": "https://up.example/i", "image": "urn:li:image:1"}}))
+    h.add("GET", "/pic.jpg", Resp(200, {}, content=b"img"))
+    h.add("PUT", "/i", Resp(201, {}))
+    h.add("POST", "/rest/posts", Hresp(201, {}, {"x-restli-id": "urn:li:share:9"}))
+    return h
+
+def test_linkedin_text_post_escapes_markup():
+    h = li_http(); r = adapter("linkedin", h).publish(req(text="Hi (you) @all #tag"))
+    sent = h.to("/rest/posts")[0][2]["json"]
+    assert sent["author"] == "urn:li:person:abc123" and "\\(you\\)" in sent["commentary"] and "#tag" in sent["commentary"]
+    assert r.provider_id == "urn:li:share:9"
+
+def test_linkedin_image_uses_uploaded_urn():
+    h = li_http(); adapter("linkedin", h).publish(req(media=[{"type": "image", "url": "https://c.example/pic.jpg"}]))
+    assert h.to("/rest/posts")[0][2]["json"]["content"]["media"]["id"] == "urn:li:image:1"
+
+def test_linkedin_missing_id_header_is_uncertain():
+    h = li_http(); h.routes[-1] = ("POST", "/rest/posts", Hresp(201, {}, {}))
+    with pytest.raises(PublishError) as e:
+        adapter("linkedin", h).publish(req())
+    assert e.value.kind == "uncertain"
+
+def test_linkedin_video_refused():
+    with pytest.raises(PublishError, match="video"):
+        adapter("linkedin", li_http()).publish(req(media=[VID]))

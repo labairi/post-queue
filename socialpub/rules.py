@@ -50,10 +50,10 @@ PLATFORMS: dict[str, dict] = {
         "why": "X has no free posting tier for new developers; posting is pay-per-use.",
     },
     "linkedin": {
-        "label": "LinkedIn", "status": "not_implemented", "max_chars": 3000, "max_images": 20,
-        "video": True, "image": True, "requires_media": False, "requires_video": False,
+        "label": "LinkedIn", "status": "implemented", "max_chars": 3000, "max_images": 1,
+        "video": False, "image": True, "requires_media": False, "requires_video": False,
         "title_required": False, "daily_cap": None,
-        "why": "Needs the LinkedIn 'Share on LinkedIn' product; company pages need Community Management API approval.",
+        "note": "Personal profile. Token lasts about 60 days; log in again to renew.",
     },
     "linkedin_page": {
         "label": "LinkedIn Page", "status": "not_implemented", "max_chars": 3000, "max_images": 20,
