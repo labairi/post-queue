@@ -34,15 +34,18 @@
       "error_kind": "",
       "last_error": "",
       "platform": "threads",
+      "provider_post_id": "18106659530629366",
+      "published_at": "2026-10-24T13:33:05Z",
       "started_at": "2026-10-24T13:32:51Z",
-      "status": "publishing"
+      "status": "published",
+      "url": "https://www.threads.com/@instamaps_app/post/De4P5dSjp8i"
     },
     "instgramamps": {
       "attempts": 0,
       "status": "pending"
     }
   },
-  "updated_at": "2026-10-24T13:32:51Z",
+  "updated_at": "2026-10-24T13:33:05Z",
   "validation_error": "",
   "version": 1
 }
