@@ -21,8 +21,11 @@
       "error_kind": "",
       "last_error": "",
       "platform": "instagram",
+      "provider_post_id": "18116317595025949",
+      "published_at": "2026-10-24T13:32:49Z",
       "started_at": "2026-10-24T13:32:33Z",
-      "status": "publishing"
+      "status": "published",
+      "url": "https://www.instagram.com/p/De4P3JXDj-0/"
     },
     "instagramaps-threads": {
       "attempts": 0,
@@ -33,7 +36,7 @@
       "status": "pending"
     }
   },
-  "updated_at": "2026-10-24T13:32:33Z",
+  "updated_at": "2026-10-24T13:32:49Z",
   "validation_error": "",
   "version": 1
 }
