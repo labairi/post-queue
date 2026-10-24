@@ -1,0 +1,30 @@
+{
+  "id": "pmvmftlfapym",
+  "title": "📍 Map your audience. Expand your reach.\n\nDiscover where your",
+  "primary": "📍 Map your audience. Expand your reach.\n\nDiscover where your audience is, explore creator locations with interactive heatmaps, and make smarter decisions with transparent performance insights. 🌍📊\n\n#Instagramaps #InstagramAnalytics #InfluencerMarketing #CreatorAnalytics #SocialMediaGrowth",
+  "intent": "scheduled",
+  "scheduled": {
+    "local": "2026-10-24T13:31",
+    "tz": "Africa/Casablanca"
+  },
+  "targets": [
+    {
+      "account": "instagramaps-facebook"
+    },
+    {
+      "account": "instagramaps-instagram"
+    },
+    {
+      "account": "instagramaps-threads"
+    },
+    {
+      "account": "instgramamps"
+    }
+  ],
+  "media": [
+    {
+      "type": "image",
+      "url": "https://raw.githubusercontent.com/labairi/post-queue-dashboard/main/media/instagramaps/pmvmftlfapym-1.jpg"
+    }
+  ]
+}
