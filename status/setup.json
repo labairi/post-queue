@@ -1,17 +1,17 @@
 {
-  "checked_at": "2026-10-23T19:18:06Z",
+  "checked_at": "2026-10-24T13:15:01Z",
   "accounts": [
     {
       "account": "instgramamps",
       "platform": "bluesky",
-      "checked_at": "2026-10-23T19:18:04Z",
+      "checked_at": "2026-10-24T13:14:59Z",
       "ok": true,
       "identity": "instagramaps.bsky.social"
     },
     {
       "account": "instagramaps-instagram",
       "platform": "instagram",
-      "checked_at": "2026-10-23T19:18:04Z",
+      "checked_at": "2026-10-24T13:14:59Z",
       "ok": true,
       "identity": "instamaps_app",
       "id": "28036468232693053"
@@ -19,18 +19,24 @@
     {
       "account": "instagramaps-threads",
       "platform": "threads",
-      "checked_at": "2026-10-23T19:18:04Z",
+      "checked_at": "2026-10-24T13:15:00Z",
       "ok": true,
       "identity": "instamaps_app",
       "id": "29058990247072065"
     },
     {
+      "account": "instagramaps-tiktok",
+      "platform": "tiktok",
+      "checked_at": "2026-10-24T13:15:00Z",
+      "ok": false,
+      "error": "missing secret(s): TIKTOK_CLIENT_KEY, TIKTOK_CLIENT_SECRET, TIKTOK_REFRESH_TOKEN"
+    },
+    {
       "account": "instagramaps-facebook",
       "platform": "facebook_page",
-      "checked_at": "2026-10-23T19:18:05Z",
-      "ok": true,
-      "identity": "instagramaps.com",
-      "id": "1521470737710886"
+      "checked_at": "2026-10-24T13:15:00Z",
+      "ok": false,
+      "error": "Facebook Page identity: rejected (HTTP 400). {\"error\":{\"message\":\"Error validating access token: Session has expired on Friday, 23-Oct-26 15:00:00 PDT. The current time is Saturday, 24-Oct-26 06:15:00 PDT.\",\"type\":\"OAuthException\",\"code\":190,\"error_subcode\":463,\"fbtrace_id\":\"AogA7MsSMSRWgu1jg_VVEZW\""
     }
   ]
 }
