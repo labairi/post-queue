@@ -1,0 +1,21 @@
+{
+  "cancelled": false,
+  "content_hash": "2b3c46e05cfc161fa8892fa868d78c16cfdd6a2468b8475e28e487b0a264531c",
+  "force_now": false,
+  "id": "pmvmmrnmozm4",
+  "targets": {
+    "instagramaps-facebook": {
+      "attempt_id": "2c2bde75f0e8",
+      "attempts": 1,
+      "content_hash": "2b3c46e05cfc161fa8892fa868d78c16cfdd6a2468b8475e28e487b0a264531c",
+      "error_kind": "",
+      "last_error": "",
+      "platform": "facebook_page",
+      "started_at": "2026-10-24T16:47:00Z",
+      "status": "publishing"
+    }
+  },
+  "updated_at": "2026-10-24T16:47:00Z",
+  "validation_error": "",
+  "version": 1
+}
