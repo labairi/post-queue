@@ -1,0 +1,16 @@
+{
+  "id": "pmvmmrnmozm4",
+  "title": "test",
+  "primary": "test",
+  "intent": "scheduled",
+  "scheduled": {
+    "local": "2026-10-24T16:46",
+    "tz": "Africa/Casablanca"
+  },
+  "targets": [
+    {
+      "account": "instagramaps-facebook"
+    }
+  ],
+  "media": []
+}
